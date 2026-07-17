@@ -9,6 +9,8 @@ This initial repository state contains **documentation only**. It does not conta
 - [Product Contract](docs/product/product-contract.md)
 - [Foundational Contract Integration Map](docs/architecture/foundational-contract-integration-map.md)
 - [Governance Contracts](docs/governance/README.md)
+- [Manual Control Workflow v0](docs/workflows/idea-to-review-v0.md)
+- [Human Usability Review Packet](docs/reviews/manual-control-workflow-v0-human-review.md)
 
 ## Important boundaries
 
