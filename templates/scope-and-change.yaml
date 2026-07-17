@@ -1,0 +1,10 @@
+record_type: SCOPE_AND_CHANGE
+status: DRAFT
+scope_id: AOS02-SCOPE-YYYY-NNN
+task_or_idea_binding: ''
+allowed_scope: []
+forbidden_scope: []
+allowed_operations: []
+forbidden_operations: []
+expansion_rule: "Any scope expansion requires renewed risk and human review."
+authority_boundary: "Scope description does not authorize execution."

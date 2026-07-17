@@ -1,0 +1,21 @@
+record_type: TASK_BRIEF
+status: DRAFT
+task_id: AOS02-TASK-YYYY-NNN
+purpose: ''
+idea_binding: ''
+risk_profile_binding: ''
+scope_binding: ''
+baseline_binding: ''
+allowed_scope: []
+forbidden_scope: []
+allowed_operations: []
+forbidden_operations: []
+acceptance_criteria: []
+required_validation: []
+required_evidence: []
+unknowns: []
+not_run: []
+blockers: []
+required_human_decisions: []
+non_grants: []
+authority_boundary: "A Task Brief is not execution, commit, push, merge, or release authority."

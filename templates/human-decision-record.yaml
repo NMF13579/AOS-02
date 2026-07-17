@@ -1,0 +1,15 @@
+record_type: HUMAN_DECISION_RECORD
+status: DRAFT
+decision_id: AOS02-DEC-YYYY-NNN
+decision_type: ''
+decided_by: HUMAN_MUST_DECIDE
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+scope_binding: ''
+decision_value: ''
+grants: []
+non_grants: []
+valid_from: ''
+expires_at: ''
+single_use: false
+consumed: false
+authority_boundary: "Only HUMAN_ACCEPTED records with exact grants may authorize the bound action."

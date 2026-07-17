@@ -1,0 +1,36 @@
+record_type: TASK_BRIEF
+status: ILLUSTRATIVE_ONLY
+task_id: AOS02-EX-TASK-001
+purpose: Draft a plain-language distinction between technical PASS and human approval.
+idea_binding: AOS02-EX-IDEA-001
+risk_profile_binding: AOS02-EX-RISK-001
+scope_binding: AOS02-EX-SCOPE-001
+baseline_binding: fictional-docs@baseline-001
+allowed_scope:
+  - fictional-docs/status-glossary-note.md
+forbidden_scope:
+  - all other files
+allowed_operations:
+  - Draft the note
+forbidden_operations:
+  - Commit
+  - Push
+acceptance_criteria:
+  - Note contains explicit non-equivalence of PASS and approval
+required_validation:
+  - Compare wording with canonical status contract
+required_evidence:
+  - Evidence report with changed path and validation outcome
+unknowns:
+  - Human readability has not been assessed
+not_run:
+  - Repository write
+  - Runtime test
+blockers: []
+required_human_decisions:
+  - AOS02-EX-DEC-001
+  - AOS02-EX-DEC-002
+non_grants:
+  - Execution without AOS02-EX-DEC-001
+  - Commit or push
+authority_boundary: "Illustrative Task Brief only; no real work is authorized."

@@ -1,0 +1,14 @@
+record_type: EVIDENCE_REPORT
+status: DRAFT
+evidence_report_id: AOS02-EVID-YYYY-NNN
+task_brief_binding: ''
+baseline_binding: ''
+scope_observation: []
+checks: []
+evidence_artifacts: []
+claims: []
+unknowns: []
+not_run: []
+blockers: []
+technical_status: HUMAN_REVIEW_REQUIRED
+authority_boundary: "Evidence records observations; evidence is never approval or execution authority."

@@ -1,0 +1,19 @@
+record_type: HUMAN_DECISION_RECORD
+status: ILLUSTRATIVE_ONLY
+decision_id: AOS02-EX-DEC-002
+decision_type: RESULT_ACCEPTANCE
+decided_by: FICTIONAL_HUMAN_OWNER
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+scope_binding: AOS02-EX-TASK-001
+decision_value: ACCEPT_DRAFT_FOR_FURTHER_REVIEW
+grants:
+  - Close the fictional drafting task
+non_grants:
+  - Commit
+  - Push
+  - Release
+valid_from: illustrative
+expires_at: illustrative
+single_use: false
+consumed: false
+authority_boundary: "Illustrative result decision only; it has no authority outside this example."

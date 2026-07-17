@@ -1,0 +1,28 @@
+record_type: EVIDENCE_REPORT
+status: ILLUSTRATIVE_ONLY
+evidence_report_id: AOS02-EX-EVID-001
+task_brief_binding: AOS02-EX-TASK-001
+baseline_binding: fictional-docs@baseline-001
+scope_observation:
+  - fictional-docs/status-glossary-note.md drafted
+  - no other fictional paths changed
+checks:
+  - check: Wording compared with canonical status semantics
+    result: PASS
+    status: PASS
+evidence_artifacts:
+  - path: fictional-docs/status-glossary-note.md
+    verification_result: Exists in illustrative scenario
+claims:
+  - claim: Draft explicitly distinguishes PASS from approval
+    verification_method: Read the fictional draft
+    status: PASS
+unknowns:
+  - Whether a new human reviewer finds it clear
+not_run:
+  - Commit
+  - Push
+  - Runtime test
+blockers: []
+technical_status: HUMAN_REVIEW_REQUIRED
+authority_boundary: "Illustrative evidence only; PASS is not approval."

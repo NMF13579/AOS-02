@@ -1,0 +1,12 @@
+record_type: IDEA_RECORD
+status: DRAFT
+idea_id: AOS02-IDEA-YYYY-NNN
+title: ''
+problem_statement: ''
+desired_outcome: ''
+primary_human_user: ''
+known_constraints: []
+known_unknowns: []
+source_material: []
+next_required_action: SELECT_RISK_AND_SCOPE
+authority_boundary: "Idea records propose work only; they do not authorize work."

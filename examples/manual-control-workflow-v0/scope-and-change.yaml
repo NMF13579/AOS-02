@@ -1,0 +1,19 @@
+record_type: SCOPE_AND_CHANGE
+status: ILLUSTRATIVE_ONLY
+scope_id: AOS02-EX-SCOPE-001
+task_or_idea_binding: AOS02-EX-IDEA-001
+allowed_scope:
+  - fictional-docs/status-glossary-note.md
+forbidden_scope:
+  - all other paths
+  - runtime
+  - repository settings
+allowed_operations:
+  - Draft one note
+  - Read the canonical status contract
+forbidden_operations:
+  - Commit
+  - Push
+  - Execute code
+expansion_rule: "Any added path would require a new fictional risk/scope review."
+authority_boundary: "Illustrative scope only; no real execution authority."

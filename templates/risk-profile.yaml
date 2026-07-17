@@ -1,0 +1,11 @@
+record_type: RISK_PROFILE
+status: DRAFT
+risk_decision_id: AOS02-RISK-YYYY-NNN
+task_or_idea_binding: ''
+selected_level: ''
+rationale: ''
+controls_required: []
+non_grants: []
+decided_by: HUMAN_MUST_DECIDE
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+authority_boundary: "Risk selection is a separate human decision; DRAFT has no authority."

@@ -1,0 +1,16 @@
+record_type: IDEA_RECORD
+status: ILLUSTRATIVE_ONLY
+idea_id: AOS02-EX-IDEA-001
+title: Add a plain-language status glossary note
+problem_statement: Readers may confuse technical PASS with human approval.
+desired_outcome: One documentation note explaining the distinction.
+primary_human_user: Documentation reviewer
+known_constraints:
+  - Documentation only
+  - No runtime or repository settings change
+known_unknowns:
+  - Whether the wording is understandable to a new reviewer
+source_material:
+  - docs/governance/contracts/status-and-glossary-contract.md
+next_required_action: SELECT_RISK_AND_SCOPE
+authority_boundary: "Illustrative record only; no real work is authorized."

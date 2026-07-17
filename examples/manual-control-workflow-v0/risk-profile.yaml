@@ -1,0 +1,16 @@
+record_type: RISK_PROFILE
+status: ILLUSTRATIVE_ONLY
+risk_decision_id: AOS02-EX-RISK-001
+task_or_idea_binding: AOS02-EX-IDEA-001
+selected_level: LOW
+rationale: One fictional documentation note; no external effect in this example.
+controls_required:
+  - Exact file scope
+  - Human decision before fictional execution
+non_grants:
+  - Commit
+  - Push
+  - Implementation
+decided_by: FICTIONAL_HUMAN_OWNER
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+authority_boundary: "Illustrative risk record only; no real authority."
