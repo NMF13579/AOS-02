@@ -15,4 +15,4 @@ This initial repository state contains **documentation only**. It does not conta
 - AOS-FARM is a read-only reference source and is not imported as product code.
 - Technical evidence is not human approval.
 - A Task Brief is not execution, commit, push, merge, or release authority.
-- This documentation baseline is intentionally uncommitted until a separate Human Decision Record authorizes a commit.
+- This documentation baseline is committed and published on `main`; every future change still requires a separately scoped Human Decision Record.
