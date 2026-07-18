@@ -1,0 +1,15 @@
+record_type: EVIDENCE_REPORT
+schema_version: "2.0"
+evidence_id: EXAMPLE-EVIDENCE-001
+task_binding: EXAMPLE-TASK-001
+baseline_binding: git:EXAMPLE-BASELINE-001
+technical_status: PASS
+reason_codes: []
+checks:
+  - name: markdown
+    status: PASS
+    exit_code: 0
+    output_reference: inline:example
+unknowns: []
+not_run: []
+blockers: []

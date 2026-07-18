@@ -81,7 +81,72 @@ Git_write: FORBIDDEN
 
 R2 must first keep current externally documented command behavior behind adapter-compatible module boundaries. Rename/removal of existing commands requires a separate compatibility decision plus CLI migration tests.
 
-## Existing test migration map
+## Target status and reason vocabulary
+
+This is the **closed target vocabulary** for the rebuilt structured result. It is a mapping contract for later R4–R6 work; it does not silently change the current CLI payload in R1.
+
+```yaml
+validation_status:
+  - PASS
+  - FAIL
+  - UNKNOWN
+  - NOT_RUN
+
+control_state:
+  - CONTROL_BLOCKED
+  - CONTROL_UNKNOWN_BLOCKED
+  - CONTROL_HUMAN_REVIEW_REQUIRED
+
+authority_status:
+  - NOT_APPLICABLE
+  - UNTRUSTED
+  - NOT_IMPLEMENTED
+
+next_required_action:
+  - FIX_BUNDLE_STRUCTURE
+  - FIX_FORBIDDEN_AUTHORITY_CLAIM
+  - FIX_RECORD_BINDINGS
+  - RESOLVE_UNKNOWN
+  - RUN_REQUIRED_CHECKS
+  - FIX_TECHNICAL_FAILURE
+  - HUMAN_REVIEW_RESULT
+  - FIX_BUNDLE_LOAD
+```
+
+`reason_code` is a stable machine category; it must not contain free-form exception text. The target vocabulary is:
+
+```yaml
+reason_code:
+  - BUNDLE_LOAD_ERROR
+  - MISSING_REQUIRED_RECORD
+  - FORBIDDEN_APPROVAL_CLAIM
+  - IDEA_BINDING_MISMATCH
+  - TASK_IDEA_BINDING_MISMATCH
+  - TASK_CONTROL_BINDING_MISMATCH
+  - EVIDENCE_TASK_BINDING_MISMATCH
+  - UNKNOWN_REQUIRED_INFORMATION
+  - MISSING_REQUIRED_CHECK
+  - REQUIRED_CHECK_NOT_RUN
+  - REQUIRED_CHECK_FAILED
+  - SCHEMA_VALIDATION_FAILED
+  - LOCAL_DECLARED_HUMAN_REFERENCE_NOT_TRUSTED
+  - TRUSTED_HUMAN_AUTHORITY_NOT_IMPLEMENTED
+  - MUTATING_EXECUTOR_DISABLED
+```
+
+A later runtime migration must carry human-readable parser or schema diagnostics in a separate `diagnostic_detail` field and map the result to one of the codes above. It must never expand authority, convert `UNKNOWN`/`NOT_RUN` to `PASS`, or treat a local declaration as trusted authority.
+
+## Migration fixtures
+
+The compatibility boundary is made executable with versioned fixtures:
+
+| Fixture | Expected result | Purpose |
+|---|---|---|
+| `tests/fixtures/contract-migration/v2-complete/` | technical `PASS`, human review still required | v2 records remain compatible |
+| `tests/fixtures/contract-migration/legacy-v1-idea/` | schema rejection | v1 has no implicit migration path |
+
+`tests/test_migration_fixtures.py` owns these assertions. Fixtures are immutable examples for compatibility testing; they are not approval records and never grant execution or Git authority.
+
 
 | Existing tests | Target test layer |
 |---|---|

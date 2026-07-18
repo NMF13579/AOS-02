@@ -1,0 +1,8 @@
+record_type: RISK_PROFILE
+schema_version: "2.0"
+risk_id: EXAMPLE-RISK-001
+idea_binding: EXAMPLE-IDEA-001
+baseline_binding: git:EXAMPLE-BASELINE-001
+selected_level: LOW_RISK_FAST
+decided_by: HUMAN_OWNER
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE

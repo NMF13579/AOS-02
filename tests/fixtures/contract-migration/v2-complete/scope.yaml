@@ -1,0 +1,9 @@
+record_type: SCOPE_AND_CHANGE
+schema_version: "2.0"
+scope_id: EXAMPLE-SCOPE-001
+idea_binding: EXAMPLE-IDEA-001
+baseline_binding: git:EXAMPLE-BASELINE-001
+allowed_paths:
+  - docs/example.md
+forbidden_paths:
+  - src/blocked.py
