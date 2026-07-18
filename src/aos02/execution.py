@@ -1,0 +1,48 @@
+"""Isolated, bounded local execution with evidence generation."""
+
+from __future__ import annotations
+
+from hashlib import sha256
+from pathlib import Path
+from typing import Any
+
+from .execution_preview import preview_scoped_execution
+
+
+def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
+    return {
+        "record_type": "EVIDENCE_REPORT",
+        "status": "BLOCKED",
+        "reason_codes": reasons,
+        "checks": [{"name": "scoped_execution", "status": "NOT_RUN"}],
+    }
+
+
+def execute_scoped_request(
+    *, root: Path, task: dict[str, Any], decision: dict[str, Any], request: dict[str, Any]
+) -> dict[str, Any]:
+    """Execute allowed WRITE operations strictly below *root* and return Evidence."""
+    preview = preview_scoped_execution(task=task, decision=decision, request=request)
+    if preview["state"] != "PREVIEW_READY":
+        return _blocked_evidence(preview["reason_codes"])
+
+    sandbox = root.resolve()
+    performed: list[dict[str, str]] = []
+    for operation in request["operations"]:
+        if operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str):
+            return _blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"])
+        target = (sandbox / operation["path"]).resolve()
+        if sandbox not in target.parents:
+            return _blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(operation["content"], encoding="utf-8")
+        performed.append({"path": operation["path"], "sha256": sha256(target.read_bytes()).hexdigest()})
+
+    return {
+        "record_type": "EVIDENCE_REPORT",
+        "status": "PASS",
+        "task_binding": task["task_id"],
+        "reason_codes": [],
+        "checks": [{"name": "scoped_execution", "status": "PASS"}],
+        "operations": performed,
+    }
