@@ -5,13 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
-
-import yaml
 
 from .execution import execute_scoped_request
 from .execution_decision import validate_human_execution_decision
 from .execution_preview import preview_scoped_execution
+from .loader import load_records
 from .publication_decision import validate_human_publication_decision
 from .result_decision import validate_human_result_decision
 from .task_brief import TaskBriefError, compile_task_brief
@@ -23,22 +21,6 @@ RESULT_DECISION_RECORDS = ("task", "evidence", "result-decision")
 PUBLICATION_DECISION_RECORDS = ("task", "evidence", "publication-decision")
 EXECUTION_DECISION_RECORDS = ("task", "execution-decision")
 EXECUTION_PREVIEW_RECORDS = ("task", "execution-decision", "execution-request")
-
-
-def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str, Any]:
-    if not directory.is_dir():
-        raise ValueError(f"bundle directory does not exist: {directory}")
-    bundle: dict[str, Any] = {}
-    for name in required_records:
-        path = directory / f"{name}.yaml"
-        if not path.is_file():
-            raise ValueError(f"missing canonical record: {path.name}")
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-        if not isinstance(data, dict):
-            raise ValueError(f"record must be a YAML mapping: {path.name}")
-        bundle[name] = data
-    return bundle
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="aos02", description="AOS-02 read-only control validation")
@@ -95,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
             result = execute_scoped_request(
                 root=args.root, task=records["task"], decision=records["execution-decision"], request=records["execution-request"],
             )
-    except (OSError, ValueError, TaskBriefError, yaml.YAMLError) as exc:
+    except (OSError, ValueError, TaskBriefError) as exc:
         result = {
             "validation": {"status": "FAIL"},
             "control": {"state": "CONTROL_BLOCKED"},
