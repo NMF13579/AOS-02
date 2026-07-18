@@ -16,6 +16,7 @@ python3.11 -m venv .venv
 .venv/bin/python -m aos02 validate examples/first-bundle
 .venv/bin/python -m aos02 compile-task examples/first-bundle --task-id EXAMPLE-TASK-DRAFT-002 --check markdown
 .venv/bin/python -m aos02 validate-execution examples/first-bundle
+.venv/bin/python -m aos02 preview-execution examples/first-bundle
 .venv/bin/python -m aos02 validate-result examples/first-bundle
 .venv/bin/python -m pytest
 ```

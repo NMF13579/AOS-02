@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 from .execution_decision import validate_human_execution_decision
+from .execution_preview import preview_scoped_execution
 from .result_decision import validate_human_result_decision
 from .task_brief import TaskBriefError, compile_task_brief
 from .validation import validate_bundle
@@ -18,6 +19,7 @@ REQUIRED_RECORDS = ("idea", "risk", "scope", "task", "evidence")
 TASK_SOURCE_RECORDS = ("idea", "risk", "scope")
 RESULT_DECISION_RECORDS = ("task", "evidence", "result-decision")
 EXECUTION_DECISION_RECORDS = ("task", "execution-decision")
+EXECUTION_PREVIEW_RECORDS = ("task", "execution-decision", "execution-request")
 
 
 def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str, Any]:
@@ -48,6 +50,8 @@ def main(argv: list[str] | None = None) -> int:
     validate_result.add_argument("bundle", type=Path)
     validate_execution = subcommands.add_parser("validate-execution", help="validate a Human Execution Decision")
     validate_execution.add_argument("bundle", type=Path)
+    preview_execution = subcommands.add_parser("preview-execution", help="produce a non-mutating scoped execution preview")
+    preview_execution.add_argument("bundle", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "validate":
@@ -63,10 +67,15 @@ def main(argv: list[str] | None = None) -> int:
             result = validate_human_result_decision(
                 task=records["task"], evidence=records["evidence"], decision=records["result-decision"],
             )
-        else:
+        elif args.command == "validate-execution":
             records = load_records(args.bundle, EXECUTION_DECISION_RECORDS)
             result = validate_human_execution_decision(
                 task=records["task"], decision=records["execution-decision"],
+            )
+        else:
+            records = load_records(args.bundle, EXECUTION_PREVIEW_RECORDS)
+            result = preview_scoped_execution(
+                task=records["task"], decision=records["execution-decision"], request=records["execution-request"],
             )
     except (OSError, ValueError, TaskBriefError, yaml.YAMLError) as exc:
         result = {

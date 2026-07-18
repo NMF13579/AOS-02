@@ -1,0 +1,5 @@
+record_type: EXECUTION_REQUEST
+task_binding: EXAMPLE-TASK-001
+operations:
+  - action: WRITE
+    path: docs/example.md
