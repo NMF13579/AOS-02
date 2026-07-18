@@ -1,0 +1,24 @@
+record_type: HUMAN_DECISION_RECORD
+status: HUMAN_ACCEPTED
+decision_id: AOS02-DEC-V0-CLOSEOUT-001
+decision_type: RESULT_ACCEPTANCE
+decided_by: "Мухаммед Назыров"
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+scope_binding:
+  candidate_commit: 3dfe5fd8e32438bb8785c68297c4ee2f53f068da
+  review_checklist: docs/reviews/v0-closeout-human-review-checklist.md
+  technical_evidence: docs/reviews/v0-clean-path-evidence.md
+decision_value: ACCEPT_V0_CLOSEOUT
+grants:
+  - "Accept the bounded AOS-02 executable control-core v0 closeout review."
+non_grants:
+  - "Implementation beyond the accepted v0 closeout scope"
+  - "Runtime scope expansion"
+  - "Commit, push, merge, or release authority for any future action"
+  - "Deployment, external integration, or production action"
+  - "Autonomous execution authority"
+valid_from: "2026-07-18T07:39:27Z"
+expires_at: null
+single_use: false
+consumed: false
+authority_boundary: "This human decision accepts only the bounded v0 closeout review. It does not authorize any future implementation, Git action, release, deployment, external integration, or autonomous execution."
