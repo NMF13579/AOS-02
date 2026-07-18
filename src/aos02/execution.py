@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
+import tempfile
 from typing import Any
 
 from .execution_preview import preview_scoped_execution
@@ -66,11 +68,22 @@ def _evidence_target(*, sandbox: Path) -> Path:
 
 
 def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
-    """Write canonical execution evidence to the executor-owned workspace path."""
+    """Atomically replace canonical execution evidence in the executor-owned path."""
     target = _evidence_target(sandbox=sandbox)
     target.parent.mkdir(parents=True, exist_ok=True)
     serialized = json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n"
-    target.write_text(serialized, encoding="utf-8")
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=target.parent, prefix=f".{target.name}.", suffix=".tmp"
+    )
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as temporary_file:
+            temporary_file.write(serialized)
+            temporary_file.flush()
+            os.fsync(temporary_file.fileno())
+        os.replace(temporary_path, target)
+    finally:
+        temporary_path.unlink(missing_ok=True)
     return {
         "path": target.relative_to(sandbox).as_posix(),
         "sha256": sha256(target.read_bytes()).hexdigest(),

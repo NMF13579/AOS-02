@@ -252,6 +252,21 @@ def test_executor_evidence_artifact_hashes_the_persisted_canonical_report(tmp_pa
     assert "evidence_artifact" not in persisted
 
 
+def test_executor_atomically_replaces_an_existing_evidence_artifact(tmp_path):
+    artifact = tmp_path / ".aos02" / "evidence-report.json"
+    artifact.parent.mkdir()
+    artifact.write_text('{"status":"PREVIOUS_COMPLETE_REPORT"}\n', encoding="utf-8")
+
+    with artifact.open(encoding="utf-8") as previous_reader:
+        result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+        previous_reader.seek(0)
+        assert previous_reader.read() == '{"status":"PREVIOUS_COMPLETE_REPORT"}\n'
+
+    persisted = json.loads(artifact.read_text(encoding="utf-8"))
+    assert persisted["status"] == "PASS"
+    assert result["evidence_artifact"]["sha256"] == sha256(artifact.read_bytes()).hexdigest()
+
+
 def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path):
     reserved_task = {"task_id": "TASK-1", "allowed_paths": [".aos02/evidence-report.json"]}
     reserved_decision = decision()
