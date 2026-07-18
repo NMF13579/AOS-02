@@ -79,6 +79,27 @@ def test_executor_blocks_operation_paths_that_resolve_to_the_same_target(tmp_pat
     assert result["reason_codes"] == ["DUPLICATE_OPERATION_PATH"]
 
 
+def test_executor_blocks_directory_targets_before_any_write(tmp_path):
+    directory_task = {"task_id": "TASK-1", "allowed_paths": ["docs/example.md", "docs/existing-directory"]}
+    directory_decision = decision()
+    directory_decision["allowed_paths"] = ["docs/example.md", "docs/existing-directory"]
+    (tmp_path / "docs/existing-directory").mkdir(parents=True)
+    directory_request = request()
+    directory_request["operations"].append({"action": "WRITE", "path": "docs/existing-directory", "content": "unsafe\n"})
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=directory_task,
+        decision=directory_decision,
+        request=directory_request,
+    )
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["UNWRITABLE_OPERATION_TARGET"]
+    assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 

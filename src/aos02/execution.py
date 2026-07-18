@@ -24,6 +24,18 @@ def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
     }
 
 
+def _target_has_writable_file_path(*, sandbox: Path, target: Path) -> bool:
+    """Reject existing directories and files that would prevent a complete preflight."""
+    if target.exists() and not target.is_file():
+        return False
+    parent = target.parent
+    while parent != sandbox:
+        if parent.exists() and not parent.is_dir():
+            return False
+        parent = parent.parent
+    return True
+
+
 def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
     """Write canonical execution evidence to the executor-owned workspace path."""
     target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
@@ -67,6 +79,8 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(sandbox not in target.parents for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
+    if any(not _target_has_writable_file_path(sandbox=sandbox, target=target) for target in targets):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNWRITABLE_OPERATION_TARGET"]))
     if len(targets) != len(set(targets)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
 
