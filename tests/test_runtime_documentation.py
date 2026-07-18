@@ -18,3 +18,16 @@ def test_runtime_documentation_has_the_verified_clean_environment_command_path()
         "validate-result examples/first-bundle",
     ):
         assert command in runtime_guide
+
+
+def test_v0_closeout_checklist_requires_a_human_decision_separate_from_technical_pass():
+    repository = Path(__file__).parents[1]
+    checklist = (
+        repository / "docs" / "reviews" / "v0-closeout-human-review-checklist.md"
+    ).read_text(encoding="utf-8")
+
+    assert "REQUIRES_HUMAN_COMPLETION" in checklist
+    assert "Technical PASS is not human approval" in checklist
+    assert "ACCEPT_V0_CLOSEOUT" in checklist
+    assert "NEEDS_CHANGES_TO_V0_CLOSEOUT" in checklist
+    assert "REJECT_V0_CLOSEOUT" in checklist
