@@ -208,6 +208,21 @@ def test_executor_refuses_an_internal_symlink_for_the_canonical_evidence_artifac
     assert not (redirected / "evidence-report.json").exists()
 
 
+def test_executor_refuses_a_hardlinked_canonical_evidence_artifact(tmp_path):
+    external = tmp_path.parent / "external-evidence-report.json"
+    external.write_text("original evidence\n", encoding="utf-8")
+    artifact = tmp_path / ".aos02" / "evidence-report.json"
+    artifact.parent.mkdir()
+    os.link(external, artifact)
+
+    with pytest.raises(ValueError, match="evidence artifact must not be hardlinked"):
+        execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert external.read_text(encoding="utf-8") == "original evidence\n"
+    assert artifact.read_text(encoding="utf-8") == "original evidence\n"
+
+
 def test_executor_refuses_an_unwritable_evidence_artifact_before_writing_operations(tmp_path):
     (tmp_path / ".aos02").write_text("not a directory", encoding="utf-8")
 
