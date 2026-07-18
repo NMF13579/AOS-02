@@ -36,11 +36,17 @@ def _target_has_writable_file_path(*, sandbox: Path, target: Path) -> bool:
     return True
 
 
-def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
-    """Write canonical execution evidence to the executor-owned workspace path."""
+def _evidence_target(*, sandbox: Path) -> Path:
+    """Resolve the executor-owned evidence path without permitting symlink escape."""
     target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
     if sandbox not in target.parents:
         raise ValueError("evidence artifact escapes explicit sandbox root")
+    return target
+
+
+def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
+    """Write canonical execution evidence to the executor-owned workspace path."""
+    target = _evidence_target(sandbox=sandbox)
     target.parent.mkdir(parents=True, exist_ok=True)
     serialized = json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n"
     target.write_text(serialized, encoding="utf-8")
@@ -63,6 +69,7 @@ def execute_scoped_request(
     sandbox = root.resolve()
     if sandbox.exists() and not sandbox.is_dir():
         raise ValueError("sandbox root must be a directory")
+    evidence_target = _evidence_target(sandbox=sandbox)
     preview = preview_scoped_execution(task=task, decision=decision, request=request)
     if preview["state"] != "PREVIEW_READY":
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
@@ -76,7 +83,6 @@ def execute_scoped_request(
     if len(operation_paths) != len(set(operation_paths)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
     targets = [(sandbox / operation_path).resolve() for operation_path in operation_paths]
-    evidence_target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
     if any(target == evidence_target for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(sandbox not in target.parents for target in targets):

@@ -110,6 +110,18 @@ def test_executor_blocks_directory_targets_before_any_write(tmp_path):
     assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
 
 
+def test_executor_refuses_an_escaped_evidence_artifact_before_writing_operations(tmp_path):
+    outside = tmp_path.parent / "outside-evidence"
+    outside.mkdir()
+    (tmp_path / ".aos02").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="evidence artifact escapes explicit sandbox root"):
+        execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert not (outside / "evidence-report.json").exists()
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 
