@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/execution-request-1.0.schema.json",
+  "title": "AOS-02 Runtime Execution Request",
+  "description": "Interoperable request record for the existing scoped execution boundary. Schema validation does not grant execution authority.",
+  "type": "object",
+  "required": ["record_type", "task_binding", "operations"],
+  "properties": {
+    "record_type": {"const": "EXECUTION_REQUEST"},
+    "task_binding": {"type": "string", "minLength": 1},
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "path"],
+        "properties": {
+          "action": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "content": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

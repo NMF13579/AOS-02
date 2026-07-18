@@ -1,0 +1,12 @@
+{
+  "state": "PREVIEW_READY",
+  "reason_codes": [],
+  "will_modify_files": false,
+  "operation_count": 1,
+  "operations": [
+    {
+      "action": "WRITE",
+      "path": "docs/example.md"
+    }
+  ]
+}
