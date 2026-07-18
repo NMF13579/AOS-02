@@ -63,12 +63,14 @@ def execute_scoped_request(
     operation_paths = [operation["path"] for operation in operations]
     if len(operation_paths) != len(set(operation_paths)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
+    targets = [(sandbox / operation_path).resolve() for operation_path in operation_paths]
+    if any(sandbox not in target.parents for target in targets):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
+    if len(targets) != len(set(targets)):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
 
     performed: list[dict[str, str]] = []
-    for operation in operations:
-        target = (sandbox / operation["path"]).resolve()
-        if sandbox not in target.parents:
-            return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
+    for operation, target in zip(operations, targets):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(operation["content"], encoding="utf-8")
         performed.append({"path": operation["path"], "sha256": sha256(target.read_bytes()).hexdigest()})

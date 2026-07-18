@@ -63,6 +63,22 @@ def test_executor_blocks_duplicate_operation_paths_before_any_write(tmp_path):
     assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
 
 
+def test_executor_blocks_operation_paths_that_resolve_to_the_same_target(tmp_path):
+    alias_task = {"task_id": "TASK-1", "allowed_paths": ["docs/example.md", "docs/../docs/example.md"]}
+    alias_decision = decision()
+    alias_decision["allowed_paths"] = ["docs/example.md", "docs/../docs/example.md"]
+    alias_request = request()
+    alias_request["operations"].append(
+        {"action": "WRITE", "path": "docs/../docs/example.md", "content": "replacement content\n"}
+    )
+
+    result = execute_scoped_request(root=tmp_path, task=alias_task, decision=alias_decision, request=alias_request)
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["DUPLICATE_OPERATION_PATH"]
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 
