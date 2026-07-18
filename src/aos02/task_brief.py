@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .path_semantics import validate_task_paths
+
 
 class TaskBriefError(ValueError):
     """Raised when source records cannot safely produce a task draft."""
@@ -37,6 +39,8 @@ def compile_task_brief(
         raise TaskBriefError("source record binding mismatch")
     if _unknown(idea.get("unknowns", [])) or _unknown(scope.get("allowed_paths", [])):
         raise TaskBriefError("UNKNOWN source information blocks Task Brief compilation")
+    if validate_task_paths(scope):
+        raise TaskBriefError("nonportable or conflicting source scope blocks Task Brief compilation")
     if not required_checks or any(not isinstance(check, str) or not check for check in required_checks):
         raise TaskBriefError("at least one named required check is required")
     return {

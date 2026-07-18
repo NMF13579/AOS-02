@@ -34,9 +34,9 @@ def validate_human_result_decision(
     if evidence.get("technical_status") != "PASS":
         reasons.append("EVIDENCE_TECHNICAL_STATUS_NOT_PASS")
     checks = evidence.get("checks", [])
-    check_names = [check.get("name") for check in checks if isinstance(check, dict)] if isinstance(checks, list) else []
+    check_names: list[str] = [check["name"] for check in checks if isinstance(check, dict) and isinstance(check.get("name"), str)] if isinstance(checks, list) else []
     required_checks = task.get("required_checks", [])
-    if not isinstance(required_checks, list) or len(check_names) != len(set(check_names)) or not set(required_checks).issubset(set(check_names)):
+    if not isinstance(required_checks, list) or len(check_names) != len(set(check_names)) or len([name.casefold() for name in check_names]) != len({name.casefold() for name in check_names}) or not set(required_checks).issubset(set(check_names)):
         reasons.append("EVIDENCE_REQUIRED_CHECK_COVERAGE_MISMATCH")
     if not checks or any(not isinstance(check, dict) or check.get("status") != "PASS" for check in checks):
         reasons.append("EVIDENCE_NOT_PASS")

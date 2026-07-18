@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from aos02.path_semantics import validate_task_paths
+
 FORBIDDEN_AUTHORITY_FIELDS = {
     "approval_granted", "execution_authorized", "commit_authorized",
     "push_authorized", "merge_authorized", "release_authorized", "lifecycle_mutated",
@@ -54,6 +56,7 @@ def validate_bundle(bundle: dict[str, Any]) -> dict[str, Any]:
     baselines = [risk.get("baseline_binding"), scope.get("baseline_binding"), task.get("baseline_binding"), evidence.get("baseline_binding")]
     if not all(isinstance(value, str) and value for value in baselines) or len(set(baselines)) != 1:
         reasons.append("BASELINE_BINDING_MISMATCH")
+    reasons.extend(validate_task_paths(task))
     if reasons:
         return _result("FAIL", "CONTROL_BLOCKED", "FIX_RECORD_BINDINGS", reasons)
     if _is_unknown(scope.get("allowed_paths")) or evidence.get("unknowns"):
