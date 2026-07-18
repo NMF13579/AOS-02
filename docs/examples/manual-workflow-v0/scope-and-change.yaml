@@ -1,0 +1,11 @@
+record_type: SCOPE_AND_CHANGE
+schema_version: "2.0"
+scope_id: EXAMPLE-SCOPE-001
+idea_binding: EXAMPLE-IDEA-001
+baseline_binding: FICTIONAL-EXAMPLE-BASELINE
+allowed_paths:
+  - docs/example-target.md
+forbidden_paths:
+  - src/
+  - schemas/
+  - .github/

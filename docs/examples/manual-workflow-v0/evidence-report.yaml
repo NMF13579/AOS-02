@@ -1,0 +1,19 @@
+record_type: EVIDENCE_REPORT
+schema_version: "2.0"
+evidence_id: EXAMPLE-EVIDENCE-001
+task_binding: EXAMPLE-TASK-001
+baseline_binding: FICTIONAL-EXAMPLE-BASELINE
+technical_status: HUMAN_REVIEW_REQUIRED
+reason_codes:
+  - FICTIONAL_DEMONSTRATION_ONLY
+checks:
+  - name: fictional-target-existence-check
+    status: NOT_RUN
+    exit_code: 0
+    output_reference: This fictional example does not create a target file.
+unknowns:
+  - Whether a real reviewer would accept the fictional outcome.
+not_run:
+  - No real filesystem or Git operation was performed.
+blockers:
+  - A fictional example cannot create real execution or approval authority.

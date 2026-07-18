@@ -1,0 +1,6 @@
+record_type: IDEA_RECORD
+schema_version: "2.0"
+idea_id: EXAMPLE-IDEA-001
+unknowns:
+  - Whether the fictional documentation page is useful to a first-time reviewer.
+  - Whether the fictional navigation links are sufficient for the example audience.

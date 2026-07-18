@@ -33,6 +33,12 @@ These templates reduce repeated formatting work. They are not records, registrie
 | Task Brief template | Manual starting point for a bounded task | `TEMPLATE` | [Open](templates/task-brief-template.md) |
 | Stage report template | Manual report format for one completed stage | `TEMPLATE` | [Open](templates/stage-report-template.md) |
 
+## Fictional manual demonstration
+
+| Material | Role | Status | Link |
+|---|---|---|---|
+| Manual Workflow Demonstrator v0 | Fictional, non-authoritative walkthrough of the complete documentation/control chain | `READ_ONLY_REFERENCE` | [Open](examples/manual-workflow-v0/README.md) |
+
 ## Known limitations
 
 - The executable control core is deliberately non-mutating.

@@ -1,0 +1,22 @@
+record_type: TASK_BRIEF
+schema_version: "2.0"
+status: DRAFT
+task_id: EXAMPLE-TASK-001
+idea_binding: EXAMPLE-IDEA-001
+risk_binding: EXAMPLE-RISK-001
+scope_binding: EXAMPLE-SCOPE-001
+baseline_binding: FICTIONAL-EXAMPLE-BASELINE
+allowed_paths:
+  - docs/example-target.md
+forbidden_paths:
+  - src/
+  - schemas/
+  - .github/
+required_checks:
+  - Verify that the fictional target exists.
+human_decision_required: true
+execution_authorized: false
+commit_authorized: false
+push_authorized: false
+merge_authorized: false
+release_authorized: false
