@@ -1,0 +1,96 @@
+record_type: TASK_BRIEF
+status: DRAFT
+task_id: AOS02-A1-IMMEDIATE-CONTAINMENT-001
+purpose: >-
+  Convert the current scoped executor into a non-mutating fail-closed boundary
+  before trusted human execution authority exists.
+idea_binding: AOS02-EXECUTABLE-CONTROL-CORE-SAFETY-CORRECTION-R4
+risk_profile_binding:
+  selected_level: HIGH_RISK_PROTECTED
+  rationale: >-
+    The task changes authority interpretation, filesystem mutation reachability,
+    CLI outcome semantics, and evidence persistence.
+  human_decision_source: TELEGRAM_HUMAN_OWNER_AUTOMATION_AUTHORIZATION_2026-07-18
+scope_binding:
+  accepted_rmi_report_commit_oid: a0c310e437f552a8686a247302f1d2590d7b11cd
+  accepted_rmi_report_tree_oid: 914e3d8055734b003211a8485c314d7dab19377b
+  accepted_rmi_report_sha256: 791909eb98e9884a39b7fc7f5520d7e9ba5b8299a4789568bcccf0bdcf2914f7
+  inspected_runtime_baseline_commit_oid: c878972e269b8ca9605aef659a815947832d0ac9
+  inspected_runtime_subject_manifest_sha256: 60e58c955a55330c831dd6c580ca3b2e77fd46f5c0f91d481090066e6f6a2836
+baseline_binding:
+  implementation_parent_commit_oid: a0c310e437f552a8686a247302f1d2590d7b11cd
+  implementation_parent_tree_oid: 914e3d8055734b003211a8485c314d7dab19377b
+allowed_scope:
+  - src/aos02/__main__.py
+  - src/aos02/execution.py
+  - src/aos02/execution_decision.py
+  - src/aos02/execution_preview.py
+  - tests/test_cli.py
+  - tests/test_cli_execution_decision.py
+  - tests/test_cli_execution_preview.py
+  - tests/test_execution.py
+  - tests/test_execution_decision.py
+  - tests/test_execution_preview.py
+  - README.md
+  - docs/runtime/executable-control-core.md
+  - tests/test_runtime_documentation.py
+forbidden_scope:
+  - docs/governance/contracts/**
+  - docs/product/**
+  - docs/architecture/**
+  - docs/reviews/aos02-v0-closeout-human-decision.yaml
+  - .github/workflows/**
+  - pyproject.toml
+  - schemas/**
+  - aos/**
+allowed_operations:
+  - Add or change A1 tests before production code for each changed behavior.
+  - Disable all filesystem writes from the scoped execution API and CLI endpoint.
+  - Treat local YAML human-decision claims as structurally evaluable but authority-untrusted.
+  - Preserve read-only validation and draft compilation semantics.
+  - Update documentation and CLI help to describe the non-mutating boundary.
+forbidden_operations:
+  - Implement or enable trusted human authority.
+  - Implement a mutating executor, transaction journal, rollback, recovery, Git adapter, or network access.
+  - Persist blocked Evidence, create .aos02, create temporary files, or create target files.
+  - Modify a path outside allowed_scope.
+  - Create implicit commit, push, merge, release, or scope-expansion authority in runtime records.
+acceptance_criteria:
+  - Local HUMAN_OWNER YAML cannot provide trusted execution authority.
+  - validate-execution reports structural result and authority UNTRUSTED, with exit 4.
+  - preview-execution produces a preview with execution readiness BLOCKED and exit 4.
+  - execute-scoped returns exit 4 and performs no filesystem mutation.
+  - Direct execute_scoped_request calls perform no filesystem mutation.
+  - No target file, directory, .aos02 directory, blocked Evidence artifact, or temporary file is created.
+  - validate, compile-task, validate-result, and validate-publication retain read-only behavior.
+  - Existing tests outside intentionally changed A1 expectations continue to pass.
+required_validation:
+  - Targeted A1 tests, including direct API and CLI mutation-negative cases.
+  - Filesystem digest before and after every execution-path case.
+  - Explicit absence checks for target files, directories, .aos02, Evidence, and temporary files.
+  - CLI exit-code checks for validate-execution, preview-execution, and execute-scoped.
+  - Full pytest suite.
+  - git diff --check.
+required_evidence:
+  - Immutable candidate commit and tree OIDs.
+  - Expected versus actual changed-path inventory.
+  - Command output and exit-code matrix.
+  - Filesystem mutation matrix.
+  - Interpreter and installed package versions.
+  - Known limitations and not-run items.
+unknowns:
+  - Trusted human authority implementation is intentionally absent.
+  - Hermetic dependency bundle availability is unknown until validation.
+not_run: []
+blockers: []
+required_human_decisions:
+  - The Human Owner's automatic-mode authorization in this conversation permits the bounded A1 work and its local commits, validation, push, merge, and release attempt.
+  - Any scope expansion or canonical-contract change remains blocked and requires a new explicit human decision.
+non_grants:
+  - This Task Brief does not itself grant runtime execution authority.
+  - This Task Brief does not make local YAML a trusted human decision.
+  - This Task Brief does not grant a mutating executor, Git authority, merge authority, or release authority.
+authority_boundary: >-
+  Task Brief and technical PASS are not runtime execution authority. The user has
+  separately authorized automated repository operations in the controlling
+  Telegram conversation; runtime local YAML remains UNTRUSTED.
