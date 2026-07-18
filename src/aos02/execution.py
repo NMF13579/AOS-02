@@ -82,6 +82,8 @@ def execute_scoped_request(
     *, root: Path, task: dict[str, Any], decision: dict[str, Any], request: dict[str, Any]
 ) -> dict[str, Any]:
     """Execute allowed WRITE operations strictly below *root* and return Evidence."""
+    if root.is_symlink():
+        raise ValueError("sandbox root must not be a symlink")
     sandbox = root.resolve()
     if sandbox.exists() and not sandbox.is_dir():
         raise ValueError("sandbox root must be a directory")

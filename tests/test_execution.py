@@ -32,6 +32,19 @@ def test_executor_rejects_a_non_directory_sandbox_root(tmp_path):
         execute_scoped_request(root=root, task=task(), decision=decision(), request=request())
 
 
+def test_executor_rejects_a_symlinked_sandbox_root_before_writing(tmp_path):
+    external_root = tmp_path / "external-root"
+    external_root.mkdir()
+    root = tmp_path / "sandbox-link"
+    root.symlink_to(external_root, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="sandbox root must not be a symlink"):
+        execute_scoped_request(root=root, task=task(), decision=decision(), request=request())
+
+    assert not (external_root / "docs/example.md").exists()
+    assert not (external_root / ".aos02/evidence-report.json").exists()
+
+
 def test_executor_writes_only_authorized_file_under_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 
