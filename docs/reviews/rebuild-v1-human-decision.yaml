@@ -1,0 +1,21 @@
+decision: ACCEPT_REBUILD_V1_CANDIDATE
+decided_by: HUMAN_OWNER
+accepted_candidate:
+  branch: rebuild/aos02-reference-driven-v1
+  commit: 8da0682eb57c8105f8e71b73a9acdb9f5108a976
+  tree: cf04af4e080d897ec6b638c4935a01efea07ea55
+accepted_scope: NON_MUTATING_CONTROL_CORE_REBUILD_V1
+trusted_human_authority: NOT_IMPLEMENTED
+mutating_executor: DISABLED
+Git_write_adapter: NOT_IMPLEMENTED
+execution_authorized: false
+commit_authorized: false
+push_authorized: false
+merge_authorized: false
+release_authorized: false
+next_required_action: SEPARATE_HUMAN_DECISION_FOR_ANY_CUTOVER_OR_MERGE
+notes: >-
+  The human owner accepts the exact reviewed candidate as the rebuilt
+  non-mutating AOS-02 control-core candidate with recorded limitations.
+  This decision does not authorize filesystem mutation, trusted execution,
+  Git writes, commit, push, merge, release, or a change to the active branch.
