@@ -7,7 +7,7 @@ def test_runtime_documentation_has_the_verified_clean_environment_command_path()
     runtime_guide = (repository / "docs/runtime/executable-control-core.md").read_text(encoding="utf-8")
 
     assert "documentation only" not in readme.lower()
-    assert '.venv/bin/pip install -e ".[test]"' in runtime_guide
+    assert '.venv/bin/pip install ".[test]"' in runtime_guide
     assert ".venv/bin/python -m pytest" in runtime_guide
     assert "non-mutating control core" in runtime_guide.lower()
     assert "MUTATING_EXECUTOR_DISABLED" in runtime_guide

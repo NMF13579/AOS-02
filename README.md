@@ -10,6 +10,7 @@ This repository provides a local validator, draft Task Brief compiler, scoped ex
 - [Foundational Contract Integration Map](docs/architecture/foundational-contract-integration-map.md)
 - [Governance Contracts](docs/governance/README.md)
 - [Manual Control Workflow v0](docs/workflows/idea-to-review-v0.md)
+- [Validated Control Loop v1](docs/workflows/validated-control-loop-v1.md)
 - [Executable Control Core](docs/runtime/executable-control-core.md)
 - [Human Usability Review Packet](docs/reviews/manual-control-workflow-v0-human-review.md)
 - [V0 Closeout Human-Review Checklist](docs/reviews/v0-closeout-human-review-checklist.md)

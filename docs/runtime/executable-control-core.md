@@ -28,7 +28,7 @@ The mutating executor is deliberately disabled. `execute-scoped` returns a block
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/pip install -e ".[test]"
+.venv/bin/pip install ".[test]"
 .venv/bin/python -m aos02 validate examples/first-bundle
 .venv/bin/python -m aos02 compile-task examples/first-bundle --task-id EXAMPLE-TASK-DRAFT-002 --check markdown
 .venv/bin/python -m aos02 validate-execution examples/first-bundle  # exits 4: authority untrusted

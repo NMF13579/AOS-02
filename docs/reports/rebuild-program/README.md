@@ -21,3 +21,4 @@ This directory holds the planning, audit, and later stage reports for the AOS-02
 | Rebuild program plan | Target architecture, stages, boundaries, and stop conditions | `DRAFT_FOR_IMPLEMENTATION` | [Open](aos02-reference-driven-rebuild-plan.md) |
 | R1 target contract consolidation | Domain/application/infrastructure/interface map and compatibility boundary | `COMPLETE` | [Open](r1-target-contract-consolidation.md) |
 | R2 clean package skeleton | Behavior-preserving modular layout and deterministic core boundary | `COMPLETE` | [Open](r2-clean-package-skeleton.md) |
+| R3 validated workflow vertical slice | Discoverable installed-package control loop and explicit blocked-execution boundary | `COMPLETE` | [Open](r3-validated-workflow-vertical-slice.md) |
