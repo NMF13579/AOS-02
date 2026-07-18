@@ -12,6 +12,7 @@ import yaml
 from .execution import execute_scoped_request
 from .execution_decision import validate_human_execution_decision
 from .execution_preview import preview_scoped_execution
+from .publication_decision import validate_human_publication_decision
 from .result_decision import validate_human_result_decision
 from .task_brief import TaskBriefError, compile_task_brief
 from .validation import validate_bundle
@@ -19,6 +20,7 @@ from .validation import validate_bundle
 REQUIRED_RECORDS = ("idea", "risk", "scope", "task", "evidence")
 TASK_SOURCE_RECORDS = ("idea", "risk", "scope")
 RESULT_DECISION_RECORDS = ("task", "evidence", "result-decision")
+PUBLICATION_DECISION_RECORDS = ("task", "evidence", "publication-decision")
 EXECUTION_DECISION_RECORDS = ("task", "execution-decision")
 EXECUTION_PREVIEW_RECORDS = ("task", "execution-decision", "execution-request")
 
@@ -49,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
     compile_task.add_argument("--check", action="append", required=True)
     validate_result = subcommands.add_parser("validate-result", help="validate a Human Result Decision")
     validate_result.add_argument("bundle", type=Path)
+    validate_publication = subcommands.add_parser("validate-publication", help="validate a Human Publication Decision without Git authority")
+    validate_publication.add_argument("bundle", type=Path)
     validate_execution = subcommands.add_parser("validate-execution", help="validate a Human Execution Decision")
     validate_execution.add_argument("bundle", type=Path)
     preview_execution = subcommands.add_parser("preview-execution", help="produce a non-mutating scoped execution preview")
@@ -70,6 +74,11 @@ def main(argv: list[str] | None = None) -> int:
             records = load_records(args.bundle, RESULT_DECISION_RECORDS)
             result = validate_human_result_decision(
                 task=records["task"], evidence=records["evidence"], decision=records["result-decision"],
+            )
+        elif args.command == "validate-publication":
+            records = load_records(args.bundle, PUBLICATION_DECISION_RECORDS)
+            result = validate_human_publication_decision(
+                task=records["task"], evidence=records["evidence"], decision=records["publication-decision"],
             )
         elif args.command == "validate-execution":
             records = load_records(args.bundle, EXECUTION_DECISION_RECORDS)
