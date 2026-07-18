@@ -20,3 +20,4 @@ This directory holds the planning, audit, and later stage reports for the AOS-02
 | Reference audit | Read-only inventory and preserve/replace/avoid decision | `COMPLETE` | [Open](reference-audit.md) |
 | Rebuild program plan | Target architecture, stages, boundaries, and stop conditions | `DRAFT_FOR_IMPLEMENTATION` | [Open](aos02-reference-driven-rebuild-plan.md) |
 | R1 target contract consolidation | Domain/application/infrastructure/interface map and compatibility boundary | `COMPLETE` | [Open](r1-target-contract-consolidation.md) |
+| R2 clean package skeleton | Behavior-preserving modular layout and deterministic core boundary | `COMPLETE` | [Open](r2-clean-package-skeleton.md) |

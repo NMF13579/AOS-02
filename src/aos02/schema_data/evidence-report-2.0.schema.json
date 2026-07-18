@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/evidence-report-2.0.schema.json",
+  "title": "AOS-02 Runtime Evidence Report v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "evidence_id", "task_binding", "baseline_binding", "technical_status", "reason_codes", "checks", "unknowns", "not_run", "blockers"],
+  "properties": {
+    "record_type": {"const": "EVIDENCE_REPORT"},
+    "schema_version": {"const": "2.0"},
+    "evidence_id": {"type": "string", "minLength": 1},
+    "task_binding": {"type": "string", "minLength": 1},
+    "baseline_binding": {"type": "string", "minLength": 1},
+    "technical_status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNKNOWN_BLOCKED", "NOT_RUN", "HUMAN_REVIEW_REQUIRED"]},
+    "reason_codes": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "exit_code", "output_reference"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNKNOWN_BLOCKED", "NOT_RUN", "HUMAN_REVIEW_REQUIRED"]},
+          "exit_code": {"type": "integer", "minimum": 0},
+          "output_reference": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "unknowns": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "not_run": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

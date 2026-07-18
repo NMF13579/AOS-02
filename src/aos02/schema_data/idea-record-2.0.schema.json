@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/idea-record-2.0.schema.json",
+  "title": "AOS-02 Runtime Idea Record v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "idea_id", "unknowns"],
+  "properties": {
+    "record_type": {"const": "IDEA_RECORD"},
+    "schema_version": {"const": "2.0"},
+    "idea_id": {"type": "string", "minLength": 1},
+    "unknowns": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

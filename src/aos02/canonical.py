@@ -1,17 +1,5 @@
-"""Deterministic serialization for binding canonical records."""
+"""Compatibility exports for deterministic domain binding helpers."""
 
-from __future__ import annotations
+from .domain.canonical import binding_digest, canonical_json
 
-import hashlib
-import json
-from typing import Any
-
-
-def canonical_json(payload: Any) -> str:
-    """Return stable UTF-8-safe JSON used only for deterministic bindings."""
-    return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-
-
-def binding_digest(payload: Any) -> str:
-    """Return SHA-256 digest of canonical JSON without granting authority."""
-    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+__all__ = ["binding_digest", "canonical_json"]
