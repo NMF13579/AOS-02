@@ -54,8 +54,6 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
 
     operations = request["operations"]
-    if any(operation.get("path") == _EVIDENCE_ARTIFACT_PATH for operation in operations):
-        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(not isinstance(operation.get("path"), str) for operation in operations):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["INVALID_OPERATION_PATH"]))
     if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
@@ -64,6 +62,9 @@ def execute_scoped_request(
     if len(operation_paths) != len(set(operation_paths)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
     targets = [(sandbox / operation_path).resolve() for operation_path in operation_paths]
+    evidence_target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
+    if any(target == evidence_target for target in targets):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(sandbox not in target.parents for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
     if len(targets) != len(set(targets)):
