@@ -21,6 +21,7 @@ A report records observations. It does **not** grant authority, accept a result,
 | S1 — Documentation Navigation | [Implementation and Validation Report](s1-documentation-navigation/implementation-validation-report.md) | `PASS` | `HUMAN_REVIEW_OF_LOCAL_S1_CANDIDATE` |
 | S2 — Manual Workflow Demonstrator | [Implementation and Validation Report](s2-manual-workflow-demonstrator/implementation-validation-report.md) | `PASS` | `HUMAN_REVIEW_OF_LOCAL_S2_CANDIDATE` |
 | S3 — Project Reports Baseline | [Implementation and Validation Report](s3-project-reports-baseline/implementation-validation-report.md) | `PASS` | `HUMAN_REVIEW_OF_LOCAL_S3_CANDIDATE` |
+| Rebuild Program | [Reference audit and staged rebuild plan](rebuild-program/README.md) | `PLANNING_BASELINE` | `R1_TARGET_CONTRACT_CONSOLIDATION` |
 
 ## Storage policy
 
