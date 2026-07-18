@@ -11,6 +11,9 @@ from .execution_preview import preview_scoped_execution
 from .runtime_records import EVIDENCE_SCHEMA_VERSION
 
 
+_EVIDENCE_ARTIFACT_PATH = ".aos02/evidence-report.json"
+
+
 def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
     return {
         "record_type": "EVIDENCE_REPORT",
@@ -23,7 +26,7 @@ def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
 
 def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
     """Write canonical execution evidence to the executor-owned workspace path."""
-    target = (sandbox / ".aos02" / "evidence-report.json").resolve()
+    target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
     if sandbox not in target.parents:
         raise ValueError("evidence artifact escapes explicit sandbox root")
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -51,6 +54,8 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
 
     operations = request["operations"]
+    if any(operation.get("path") == _EVIDENCE_ARTIFACT_PATH for operation in operations):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]))
 

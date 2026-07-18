@@ -1,3 +1,4 @@
+from hashlib import sha256
 import json
 
 from aos02.execution import execute_scoped_request
@@ -56,6 +57,35 @@ def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     assert evidence_path.read_text(encoding="utf-8").endswith("\n")
     assert '"record_type": "EVIDENCE_REPORT"' in evidence_path.read_text(encoding="utf-8")
     assert result["evidence_artifact"]["path"] == ".aos02/evidence-report.json"
+
+
+def test_executor_evidence_artifact_hashes_the_persisted_canonical_report(tmp_path):
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    artifact = tmp_path / result["evidence_artifact"]["path"]
+    persisted = json.loads(artifact.read_text(encoding="utf-8"))
+    assert result["evidence_artifact"]["sha256"] == sha256(artifact.read_bytes()).hexdigest()
+    assert persisted == {key: value for key, value in result.items() if key != "evidence_artifact"}
+    assert "evidence_artifact" not in persisted
+
+
+def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path):
+    reserved_task = {"task_id": "TASK-1", "allowed_paths": [".aos02/evidence-report.json"]}
+    reserved_decision = decision()
+    reserved_decision["allowed_paths"] = [".aos02/evidence-report.json"]
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=reserved_task,
+        decision=reserved_decision,
+        request=request(".aos02/evidence-report.json"),
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["EVIDENCE_ARTIFACT_PATH_RESERVED"]
+    persisted = json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))
+    assert persisted["status"] == "BLOCKED"
+    assert "safe content" not in (tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8")
 
 
 def test_executor_persists_blocked_evidence_inside_explicit_sandbox_root(tmp_path):
