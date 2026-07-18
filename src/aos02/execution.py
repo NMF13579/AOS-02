@@ -36,6 +36,16 @@ def _target_has_writable_file_path(*, sandbox: Path, target: Path) -> bool:
     return True
 
 
+def _path_traverses_symlink(*, sandbox: Path, operation_path: str) -> bool:
+    """Return whether a requested operation reaches its target through a symlink."""
+    current = sandbox
+    for component in Path(operation_path).parts:
+        current /= component
+        if current.is_symlink():
+            return True
+    return False
+
+
 def _evidence_target(*, sandbox: Path) -> Path:
     """Resolve the executor-owned evidence path without permitting symlink indirection."""
     canonical_path = sandbox / _EVIDENCE_ARTIFACT_PATH
@@ -95,6 +105,8 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(sandbox not in target.parents for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
+    if any(_path_traverses_symlink(sandbox=sandbox, operation_path=operation_path) for operation_path in operation_paths):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SYMLINK_OPERATION_PATH_BLOCKED"]))
     if any(not _target_has_writable_file_path(sandbox=sandbox, target=target) for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNWRITABLE_OPERATION_TARGET"]))
     if len(targets) != len(set(targets)):

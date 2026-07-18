@@ -89,6 +89,27 @@ def test_executor_blocks_operation_paths_that_resolve_to_the_same_target(tmp_pat
     assert result["reason_codes"] == ["DUPLICATE_OPERATION_PATH"]
 
 
+def test_executor_rejects_an_internal_symlinked_operation_path(tmp_path):
+    symlink_task = {"task_id": "TASK-1", "allowed_paths": ["docs/link.md"]}
+    symlink_decision = decision()
+    symlink_decision["allowed_paths"] = ["docs/link.md"]
+    redirected = tmp_path / "docs" / "redirected.md"
+    redirected.parent.mkdir()
+    redirected.write_text("original content\n", encoding="utf-8")
+    (tmp_path / "docs" / "link.md").symlink_to(redirected)
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=symlink_task,
+        decision=symlink_decision,
+        request=request("docs/link.md"),
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["SYMLINK_OPERATION_PATH_BLOCKED"]
+    assert redirected.read_text(encoding="utf-8") == "original content\n"
+
+
 def test_executor_blocks_directory_targets_before_any_write(tmp_path):
     directory_task = {"task_id": "TASK-1", "allowed_paths": ["docs/example.md", "docs/existing-directory"]}
     directory_decision = decision()
