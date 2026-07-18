@@ -88,6 +88,25 @@ def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path
     assert "safe content" not in (tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8")
 
 
+def test_executor_blocks_non_string_operation_path_with_persisted_evidence(tmp_path):
+    malformed_task = {"task_id": "TASK-1", "allowed_paths": [7]}
+    malformed_decision = decision()
+    malformed_decision["allowed_paths"] = [7]
+    malformed_request = request()
+    malformed_request["operations"][0]["path"] = 7
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=malformed_task,
+        decision=malformed_decision,
+        request=malformed_request,
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["INVALID_OPERATION_PATH"]
+    assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
+
+
 def test_executor_persists_blocked_evidence_inside_explicit_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request("../escape.txt"))
 

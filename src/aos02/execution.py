@@ -56,6 +56,8 @@ def execute_scoped_request(
     operations = request["operations"]
     if any(operation.get("path") == _EVIDENCE_ARTIFACT_PATH for operation in operations):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
+    if any(not isinstance(operation.get("path"), str) for operation in operations):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["INVALID_OPERATION_PATH"]))
     if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]))
 
