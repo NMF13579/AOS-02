@@ -122,6 +122,18 @@ def test_executor_refuses_an_escaped_evidence_artifact_before_writing_operations
     assert not (outside / "evidence-report.json").exists()
 
 
+def test_executor_refuses_an_internal_symlink_for_the_canonical_evidence_artifact(tmp_path):
+    redirected = tmp_path / "redirected-evidence"
+    redirected.mkdir()
+    (tmp_path / ".aos02").symlink_to(redirected, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="evidence artifact path must not traverse a symlink"):
+        execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert not (redirected / "evidence-report.json").exists()
+
+
 def test_executor_refuses_an_unwritable_evidence_artifact_before_writing_operations(tmp_path):
     (tmp_path / ".aos02").write_text("not a directory", encoding="utf-8")
 

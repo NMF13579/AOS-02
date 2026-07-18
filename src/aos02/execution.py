@@ -37,10 +37,16 @@ def _target_has_writable_file_path(*, sandbox: Path, target: Path) -> bool:
 
 
 def _evidence_target(*, sandbox: Path) -> Path:
-    """Resolve the executor-owned evidence path without permitting symlink escape."""
-    target = (sandbox / _EVIDENCE_ARTIFACT_PATH).resolve()
+    """Resolve the executor-owned evidence path without permitting symlink indirection."""
+    canonical_path = sandbox / _EVIDENCE_ARTIFACT_PATH
+    target = canonical_path.resolve()
     if sandbox not in target.parents:
         raise ValueError("evidence artifact escapes explicit sandbox root")
+    current = sandbox
+    for component in Path(_EVIDENCE_ARTIFACT_PATH).parts:
+        current /= component
+        if current.is_symlink():
+            raise ValueError("evidence artifact path must not traverse a symlink")
     return target
 
 
