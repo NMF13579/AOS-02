@@ -44,7 +44,7 @@ git diff --check
 | Scoped execution | `PASS`; wrote only `docs/example.md` plus executor-owned `.aos02/evidence-report.json` below the explicit sandbox. |
 | Result-decision validation | valid; commit, merge, push, and release remain false. |
 | Runtime schema contracts | included in the full suite with `jsonschema` installed. |
-| Full test suite | `64 passed in 0.52s`. |
+| Full test suite | `65 passed in 0.53s`. |
 | Dependency consistency | `No broken requirements found.` |
 | Repository whitespace check | `git diff --check` produced no output. |
 
