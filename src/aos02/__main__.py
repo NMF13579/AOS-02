@@ -9,16 +9,18 @@ from typing import Any
 
 import yaml
 
+from .task_brief import TaskBriefError, compile_task_brief
 from .validation import validate_bundle
 
 REQUIRED_RECORDS = ("idea", "risk", "scope", "task", "evidence")
+TASK_SOURCE_RECORDS = ("idea", "risk", "scope")
 
 
-def load_bundle(directory: Path) -> dict[str, Any]:
+def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str, Any]:
     if not directory.is_dir():
         raise ValueError(f"bundle directory does not exist: {directory}")
     bundle: dict[str, Any] = {}
-    for name in REQUIRED_RECORDS:
+    for name in required_records:
         path = directory / f"{name}.yaml"
         if not path.is_file():
             raise ValueError(f"missing canonical record: {path.name}")
@@ -34,10 +36,21 @@ def main(argv: list[str] | None = None) -> int:
     subcommands = parser.add_subparsers(dest="command", required=True)
     validate = subcommands.add_parser("validate", help="validate a canonical YAML record bundle")
     validate.add_argument("bundle", type=Path)
+    compile_task = subcommands.add_parser("compile-task", help="compile a non-authoritative Task Brief draft")
+    compile_task.add_argument("bundle", type=Path)
+    compile_task.add_argument("--task-id", required=True)
+    compile_task.add_argument("--check", action="append", required=True)
     args = parser.parse_args(argv)
     try:
-        result = validate_bundle(load_bundle(args.bundle))
-    except (OSError, ValueError, yaml.YAMLError) as exc:
+        if args.command == "validate":
+            result = validate_bundle(load_records(args.bundle, REQUIRED_RECORDS))
+        else:
+            records = load_records(args.bundle, TASK_SOURCE_RECORDS)
+            result = compile_task_brief(
+                idea=records["idea"], risk=records["risk"], scope=records["scope"],
+                task_id=args.task_id, required_checks=args.check,
+            )
+    except (OSError, ValueError, TaskBriefError, yaml.YAMLError) as exc:
         result = {
             "validation": {"status": "FAIL"},
             "control": {"state": "CONTROL_BLOCKED"},

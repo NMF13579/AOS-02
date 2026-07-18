@@ -6,7 +6,7 @@ The first executable component is a **read-only local validator** for canonical 
 Idea -> Risk + Scope -> Task Brief -> Evidence -> Human Review
 ```
 
-It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidden approval claims. It does not create decisions, execute changes, touch Git, connect to a network, or grant authority.
+It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidden approval claims. It can also compile a **DRAFT-only** Task Brief from Idea/Risk/Scope records. It does not create human decisions, execute changes, touch Git, connect to a network, or grant authority.
 
 ## Run locally
 
@@ -14,6 +14,7 @@ It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidd
 python3.11 -m venv .venv
 .venv/bin/pip install . pytest
 .venv/bin/python -m aos02 validate examples/first-bundle
+.venv/bin/python -m aos02 compile-task examples/first-bundle --task-id EXAMPLE-TASK-DRAFT-002 --check markdown
 .venv/bin/python -m pytest
 ```
 
