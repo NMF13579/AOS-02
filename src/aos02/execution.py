@@ -8,11 +8,13 @@ from pathlib import Path
 from typing import Any
 
 from .execution_preview import preview_scoped_execution
+from .runtime_records import EVIDENCE_SCHEMA_VERSION
 
 
 def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
     return {
         "record_type": "EVIDENCE_REPORT",
+        "schema_version": EVIDENCE_SCHEMA_VERSION,
         "status": "BLOCKED",
         "reason_codes": reasons,
         "checks": [{"name": "scoped_execution", "status": "NOT_RUN"}],
@@ -57,6 +59,7 @@ def execute_scoped_request(
 
     evidence = {
         "record_type": "EVIDENCE_REPORT",
+        "schema_version": EVIDENCE_SCHEMA_VERSION,
         "status": "PASS",
         "task_binding": task["task_id"],
         "reason_codes": [],
