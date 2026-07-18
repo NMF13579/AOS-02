@@ -1,0 +1,5 @@
+record_type: HUMAN_RESULT_DECISION
+decision_value: ACCEPT
+task_binding: EXAMPLE-TASK-001
+evidence_binding: EXAMPLE-EVIDENCE-001
+decided_by: HUMAN_OWNER

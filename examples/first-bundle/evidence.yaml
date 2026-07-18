@@ -1,4 +1,5 @@
 record_type: EVIDENCE_REPORT
+evidence_id: EXAMPLE-EVIDENCE-001
 task_binding: EXAMPLE-TASK-001
 checks:
   - name: markdown

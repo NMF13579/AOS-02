@@ -9,11 +9,13 @@ from typing import Any
 
 import yaml
 
+from .result_decision import validate_human_result_decision
 from .task_brief import TaskBriefError, compile_task_brief
 from .validation import validate_bundle
 
 REQUIRED_RECORDS = ("idea", "risk", "scope", "task", "evidence")
 TASK_SOURCE_RECORDS = ("idea", "risk", "scope")
+RESULT_DECISION_RECORDS = ("task", "evidence", "result-decision")
 
 
 def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str, Any]:
@@ -40,15 +42,22 @@ def main(argv: list[str] | None = None) -> int:
     compile_task.add_argument("bundle", type=Path)
     compile_task.add_argument("--task-id", required=True)
     compile_task.add_argument("--check", action="append", required=True)
+    validate_result = subcommands.add_parser("validate-result", help="validate a Human Result Decision")
+    validate_result.add_argument("bundle", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "validate":
             result = validate_bundle(load_records(args.bundle, REQUIRED_RECORDS))
-        else:
+        elif args.command == "compile-task":
             records = load_records(args.bundle, TASK_SOURCE_RECORDS)
             result = compile_task_brief(
                 idea=records["idea"], risk=records["risk"], scope=records["scope"],
                 task_id=args.task_id, required_checks=args.check,
+            )
+        else:
+            records = load_records(args.bundle, RESULT_DECISION_RECORDS)
+            result = validate_human_result_decision(
+                task=records["task"], evidence=records["evidence"], decision=records["result-decision"],
             )
     except (OSError, ValueError, TaskBriefError, yaml.YAMLError) as exc:
         result = {
