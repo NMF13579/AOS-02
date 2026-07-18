@@ -5,7 +5,7 @@ task_binding: EXAMPLE-TASK-001
 baseline_binding: FICTIONAL-EXAMPLE-BASELINE
 technical_status: HUMAN_REVIEW_REQUIRED
 reason_codes:
-  - FICTIONAL_DEMONSTRATION_ONLY
+  - EVIDENCE_INCOMPLETE
 checks:
   - name: fictional-target-existence-check
     status: NOT_RUN

@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from .path_semantics import validate_task_paths
+
 
 FORBIDDEN_GIT_FIELDS = {"commit_authorized", "push_authorized", "merge_authorized", "release_authorized"}
 
 
 def validate_human_execution_decision(*, task: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     """Validate a bounded local-execution grant without performing any action."""
-    reasons: list[str] = []
+    reasons: list[str] = list(validate_task_paths(task))
     if decision.get("record_type") != "HUMAN_DECISION_RECORD" or decision.get(
         "decision_type"
     ) != "EXECUTION":

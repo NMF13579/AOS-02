@@ -110,7 +110,7 @@ def _semantic_exit_code(command: str, result: dict[str, object]) -> int:
         return 3
     if command in {"validate-execution", "preview-execution", "execute-scoped"}:
         reasons = result.get("reason_codes", [])
-        if not isinstance(reasons, list) or any(reason not in EXECUTION_AUTHORITY_BLOCK_REASONS for reason in reasons):
+        if not isinstance(reasons, list) or not reasons or any(reason not in EXECUTION_AUTHORITY_BLOCK_REASONS for reason in reasons):
             return 3
         return 4
     return 0

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .path_semantics import validate_task_paths
+
 FORBIDDEN_GIT_FIELDS = {"commit_authorized", "push_authorized", "merge_authorized", "release_authorized"}
 
 
@@ -11,7 +13,7 @@ def validate_human_publication_decision(
     *, task: dict[str, Any], evidence: dict[str, Any], decision: dict[str, Any]
 ) -> dict[str, Any]:
     """Record bounded human publication intent; never grant Git authority itself."""
-    reasons: list[str] = []
+    reasons: list[str] = list(validate_task_paths(task))
     if decision.get("record_type") != "HUMAN_DECISION_RECORD" or decision.get(
         "decision_type"
     ) != "PUSH":
