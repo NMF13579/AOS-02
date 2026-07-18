@@ -24,3 +24,4 @@ This directory holds the planning, audit, and later stage reports for the AOS-02
 | R3 validated workflow vertical slice | Discoverable installed-package control loop and explicit blocked-execution boundary | `COMPLETE` | [Open](r3-validated-workflow-vertical-slice.md) |
 | R4 clean install and bootstrap | Fresh non-hermetic installation, embedded schema check, CLI and full suite | `COMPLETE_NON_HERMETIC` | [Open](r4-clean-install-and-bootstrap.md) |
 | R5 documentation and dogfood | Owner workflow, fictional example, documentation-only dogfood, and checklist | `COMPLETE` | [Open](r5-documentation-and-dogfood.md) |
+| R6 rebuild review and cutover | Candidate-bound technical review; human cutover decision still required | `CANDIDATE_REVIEW_READY` | [Open](r6-rebuild-review-and-cutover.md) |
