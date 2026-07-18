@@ -94,7 +94,7 @@ No production write was allowed. The temporary roots used solely as non-existing
 | `validate_human_publication_decision()` | Publication decision evaluation | No |
 | `evaluate_git_preflight()` | Git-state evaluation | No |
 
-Direct production executor callers were also found in `tests/test_execution.py` and `tests/test_cli_execution_preview.py`.
+`tests/test_execution.py` directly calls `execute_scoped_request()`. `tests/test_cli_execution_preview.py` reaches the executor only through the CLI subprocess route (`python -m aos02 execute-scoped`).
 
 ## 5. Mutation reachability inventory
 
