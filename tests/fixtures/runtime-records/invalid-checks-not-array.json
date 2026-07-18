@@ -1,0 +1,15 @@
+{
+  "record_type": "EVIDENCE_REPORT",
+  "schema_version": "1.0",
+  "status": "PASS",
+  "task_binding": "TASK-1",
+  "reason_codes": [],
+  "checks": "PASS",
+  "operations": [
+    {"path": "docs/example.md", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+  ],
+  "evidence_artifact": {
+    "path": ".aos02/evidence-report.json",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}

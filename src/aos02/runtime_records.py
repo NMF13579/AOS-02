@@ -25,6 +25,10 @@ def validate_runtime_record(record: dict[str, Any]) -> dict[str, Any]:
         record.get("record_type") == "EVIDENCE_REPORT"
         and record.get("schema_version") == EVIDENCE_SCHEMA_VERSION
         and record.get("status") in {"PASS", "BLOCKED"}
+        and isinstance(record.get("reason_codes"), list)
+        and all(isinstance(reason, str) for reason in record["reason_codes"])
+        and isinstance(record.get("checks"), list)
+        and all(isinstance(check, dict) for check in record["checks"])
     )
     if record.get("status") == "PASS":
         artifact = record.get("evidence_artifact")
