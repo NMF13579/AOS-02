@@ -29,6 +29,21 @@ def _validator(schema_name: str):
             "valid-execution-preview-ready.json",
             "invalid-execution-preview-operation-count.json",
         ),
+        (
+            "idea-record-1.0.schema.json",
+            "valid-idea-record.json",
+            "invalid-idea-record-missing-idea-id.json",
+        ),
+        (
+            "risk-profile-1.0.schema.json",
+            "valid-risk-profile.json",
+            "invalid-risk-profile-missing-selected-level.json",
+        ),
+        (
+            "scope-and-change-1.0.schema.json",
+            "valid-scope-and-change.json",
+            "invalid-scope-and-change-allowed-paths-not-array.json",
+        ),
     ],
 )
 def test_runtime_v1_contracts_validate_focused_fixtures(schema_name, valid_fixture, invalid_fixture):

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/risk-profile-1.0.schema.json",
+  "title": "AOS-02 Runtime Risk Profile",
+  "description": "Risk classification record. Schema validation does not assign risk or grant authority.",
+  "type": "object",
+  "required": ["record_type", "risk_id", "idea_binding", "selected_level"],
+  "properties": {
+    "record_type": {"const": "RISK_PROFILE"},
+    "risk_id": {"type": "string", "minLength": 1},
+    "idea_binding": {"type": "string", "minLength": 1},
+    "selected_level": {"type": "string", "minLength": 1},
+    "decided_by": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}

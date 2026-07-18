@@ -1,0 +1,7 @@
+{
+  "record_type": "RISK_PROFILE",
+  "risk_id": "RISK-1",
+  "idea_binding": "IDEA-1",
+  "selected_level": "LOW_RISK_DOCUMENTATION_ONLY",
+  "decided_by": "HUMAN_OWNER"
+}
