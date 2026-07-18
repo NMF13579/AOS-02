@@ -33,3 +33,13 @@ def test_executor_blocks_path_traversal_without_writing(tmp_path):
     assert not (tmp_path.parent / "escape.txt").exists()
     assert result["checks"][0]["status"] == "NOT_RUN"
     assert "OPERATION_OUTSIDE_SCOPE" in result["reason_codes"]
+
+
+def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    evidence_path = tmp_path / ".aos02" / "evidence-report.json"
+    assert evidence_path.is_file()
+    assert evidence_path.read_text(encoding="utf-8").endswith("\n")
+    assert '"record_type": "EVIDENCE_REPORT"' in evidence_path.read_text(encoding="utf-8")
+    assert result["evidence_artifact"]["path"] == ".aos02/evidence-report.json"

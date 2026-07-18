@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hashlib import sha256
+import json
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,20 @@ def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
         "status": "BLOCKED",
         "reason_codes": reasons,
         "checks": [{"name": "scoped_execution", "status": "NOT_RUN"}],
+    }
+
+
+def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
+    """Write canonical execution evidence to the executor-owned workspace path."""
+    target = (sandbox / ".aos02" / "evidence-report.json").resolve()
+    if sandbox not in target.parents:
+        raise ValueError("evidence artifact escapes explicit sandbox root")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    serialized = json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n"
+    target.write_text(serialized, encoding="utf-8")
+    return {
+        "path": target.relative_to(sandbox).as_posix(),
+        "sha256": sha256(target.read_bytes()).hexdigest(),
     }
 
 
@@ -38,7 +53,7 @@ def execute_scoped_request(
         target.write_text(operation["content"], encoding="utf-8")
         performed.append({"path": operation["path"], "sha256": sha256(target.read_bytes()).hexdigest()})
 
-    return {
+    evidence = {
         "record_type": "EVIDENCE_REPORT",
         "status": "PASS",
         "task_binding": task["task_id"],
@@ -46,3 +61,5 @@ def execute_scoped_request(
         "checks": [{"name": "scoped_execution", "status": "PASS"}],
         "operations": performed,
     }
+    evidence["evidence_artifact"] = _persist_evidence(sandbox=sandbox, evidence=evidence)
+    return evidence
