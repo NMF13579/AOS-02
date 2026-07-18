@@ -1,5 +1,18 @@
-record_type: HUMAN_RESULT_DECISION
+record_type: HUMAN_DECISION_RECORD
+schema_version: "2.0"
+status: HUMAN_ACCEPTED
+decision_id: EXAMPLE-RESULT-DECISION-001
+decision_type: RESULT_ACCEPTANCE
 decision_value: ACCEPT
-task_binding: EXAMPLE-TASK-001
-evidence_binding: EXAMPLE-EVIDENCE-001
 decided_by: HUMAN_OWNER
+identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
+scope_binding: EXAMPLE-TASK-001
+evidence_binding: EXAMPLE-EVIDENCE-001
+baseline_binding: git:EXAMPLE-BASELINE-001
+grants:
+  - RESULT_ACCEPTANCE
+non_grants:
+  - COMMIT
+  - PUSH
+  - MERGE
+  - RELEASE

@@ -41,11 +41,13 @@ def compile_task_brief(
         raise TaskBriefError("at least one named required check is required")
     return {
         "record_type": "TASK_BRIEF",
+        "schema_version": "2.0",
         "status": "DRAFT",
         "task_id": task_id,
         "idea_binding": idea_id,
         "risk_binding": risk_id,
         "scope_binding": scope_id,
+        "baseline_binding": scope.get("baseline_binding"),
         "allowed_paths": list(scope.get("allowed_paths", [])),
         "forbidden_paths": list(scope.get("forbidden_paths", [])),
         "required_checks": list(required_checks),

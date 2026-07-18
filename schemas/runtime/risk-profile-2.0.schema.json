@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/risk-profile-2.0.schema.json",
+  "title": "AOS-02 Runtime Risk Profile v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "risk_id", "idea_binding", "baseline_binding", "selected_level", "decided_by", "identity_assurance_level"],
+  "properties": {
+    "record_type": {"const": "RISK_PROFILE"},
+    "schema_version": {"const": "2.0"},
+    "risk_id": {"type": "string", "minLength": 1},
+    "idea_binding": {"type": "string", "minLength": 1},
+    "baseline_binding": {"type": "string", "minLength": 1},
+    "selected_level": {"enum": ["LOW_RISK_FAST", "MEDIUM", "HIGH_RISK_PROTECTED"]},
+    "decided_by": {"type": "string", "minLength": 1},
+    "identity_assurance_level": {"const": "LOCAL_DECLARED_HUMAN_REFERENCE"}
+  },
+  "additionalProperties": false
+}

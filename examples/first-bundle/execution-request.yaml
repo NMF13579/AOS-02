@@ -1,5 +1,7 @@
 record_type: EXECUTION_REQUEST
+schema_version: "2.0"
 task_binding: EXAMPLE-TASK-001
+baseline_binding: git:EXAMPLE-BASELINE-001
 operations:
   - action: WRITE
     path: docs/example.md

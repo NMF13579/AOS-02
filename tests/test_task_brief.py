@@ -1,19 +1,21 @@
 import pytest
 
 from aos02.task_brief import TaskBriefError, compile_task_brief
+from runtime_v2_fixtures import idea, risk, scope
 
 
 def test_compile_task_brief_creates_draft_without_human_or_execution_authority():
     task = compile_task_brief(
-        idea={"record_type": "IDEA_RECORD", "idea_id": "IDEA-1", "unknowns": []},
-        risk={"record_type": "RISK_PROFILE", "risk_id": "RISK-1", "idea_binding": "IDEA-1", "selected_level": "LOW_RISK_DOCUMENTATION_ONLY"},
-        scope={"record_type": "SCOPE_AND_CHANGE", "scope_id": "SCOPE-1", "idea_binding": "IDEA-1", "allowed_paths": ["docs/example.md"], "forbidden_paths": ["src/"]},
+        idea=idea(),
+        risk=risk(),
+        scope=scope(),
         task_id="TASK-1",
         required_checks=["markdown"],
     )
 
     assert task["record_type"] == "TASK_BRIEF"
     assert task["status"] == "DRAFT"
+    assert task["schema_version"] == "2.0"
     assert task["idea_binding"] == "IDEA-1"
     assert task["risk_binding"] == "RISK-1"
     assert task["scope_binding"] == "SCOPE-1"
@@ -27,9 +29,9 @@ def test_compile_task_brief_creates_draft_without_human_or_execution_authority()
 def test_compile_task_brief_rejects_unknown_scope():
     with pytest.raises(TaskBriefError, match="UNKNOWN"):
         compile_task_brief(
-            idea={"idea_id": "IDEA-1", "unknowns": []},
-            risk={"risk_id": "RISK-1", "idea_binding": "IDEA-1"},
-            scope={"scope_id": "SCOPE-1", "idea_binding": "IDEA-1", "allowed_paths": ["UNKNOWN"]},
+            idea=idea(),
+            risk=risk(),
+            scope={**scope(), "allowed_paths": ["UNKNOWN"]},
             task_id="TASK-1",
             required_checks=["markdown"],
         )

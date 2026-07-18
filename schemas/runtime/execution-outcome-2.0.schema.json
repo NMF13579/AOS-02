@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/execution-outcome-2.0.schema.json",
+  "title": "AOS-02 Runtime Non-Mutating Execution Outcome v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "task_binding", "baseline_binding", "technical_status", "reason_codes", "checks", "execution_authorized", "commit_authorized", "push_authorized", "merge_authorized", "release_authorized"],
+  "properties": {
+    "record_type": {"const": "EXECUTION_OUTCOME"},
+    "schema_version": {"const": "2.0"},
+    "task_binding": {"type": "string", "minLength": 1},
+    "baseline_binding": {"type": "string", "minLength": 1},
+    "technical_status": {"const": "BLOCKED"},
+    "reason_codes": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {"const": "scoped_execution"},
+          "status": {"const": "NOT_RUN"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_authorized": {"const": false},
+    "commit_authorized": {"const": false},
+    "push_authorized": {"const": false},
+    "merge_authorized": {"const": false},
+    "release_authorized": {"const": false}
+  },
+  "additionalProperties": false
+}

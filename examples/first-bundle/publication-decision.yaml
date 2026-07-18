@@ -1,17 +1,17 @@
 record_type: HUMAN_DECISION_RECORD
 schema_version: "2.0"
 status: HUMAN_ACCEPTED
-decision_id: EXAMPLE-EXECUTION-DECISION-001
-decision_type: EXECUTION
-decision_value: ALLOW_LOCAL_EXECUTION
+decision_id: EXAMPLE-PUSH-DECISION-001
+decision_type: PUSH
+decision_value: AUTHORIZE_PUBLICATION
 decided_by: HUMAN_OWNER
 identity_assurance_level: LOCAL_DECLARED_HUMAN_REFERENCE
 scope_binding: EXAMPLE-TASK-001
+evidence_binding: EXAMPLE-EVIDENCE-001
 baseline_binding: git:EXAMPLE-BASELINE-001
 grants:
-  - LOCAL_EXECUTION
+  - PUSH
 non_grants:
   - COMMIT
-  - PUSH
   - MERGE
   - RELEASE

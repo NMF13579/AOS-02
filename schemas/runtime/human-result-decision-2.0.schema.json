@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/human-result-decision-2.0.schema.json",
+  "title": "AOS-02 Runtime Human Result Decision Projection v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "status", "decision_id", "decision_type", "decided_by", "identity_assurance_level", "scope_binding", "evidence_binding", "baseline_binding", "decision_value", "grants", "non_grants"],
+  "properties": {
+    "record_type": {"const": "HUMAN_DECISION_RECORD"},
+    "schema_version": {"const": "2.0"},
+    "status": {"enum": ["DRAFT", "HUMAN_ACCEPTED", "REJECTED", "EXPIRED", "CONSUMED", "REVOKED"]},
+    "decision_id": {"type": "string", "minLength": 1},
+    "decision_type": {"const": "RESULT_ACCEPTANCE"},
+    "decided_by": {"type": "string", "minLength": 1},
+    "identity_assurance_level": {"const": "LOCAL_DECLARED_HUMAN_REFERENCE"},
+    "scope_binding": {"type": "string", "minLength": 1},
+    "evidence_binding": {"type": "string", "minLength": 1},
+    "baseline_binding": {"type": "string", "minLength": 1},
+    "decision_value": {"enum": ["ACCEPT", "NEEDS_CHANGES", "REJECT"]},
+    "grants": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "non_grants": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

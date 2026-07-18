@@ -9,6 +9,12 @@ import yaml
 from yaml.events import AliasEvent
 from yaml.nodes import MappingNode
 
+from .runtime_schema import validate_record_schema
+
+MAX_DOCUMENT_BYTES = 1_048_576
+MAX_NESTING_DEPTH = 32
+MAX_COLLECTION_ITEMS = 10_000
+
 
 KNOWN_RECORD_FILENAMES = frozenset(
     {
@@ -68,12 +74,33 @@ class _StrictSafeLoader(yaml.SafeLoader):
 
 def _load_mapping(path: Path) -> dict[str, Any]:
     try:
-        data = yaml.load(path.read_text(encoding="utf-8"), Loader=_StrictSafeLoader)
+        raw = path.read_bytes()
+        if len(raw) > MAX_DOCUMENT_BYTES:
+            raise BundleLoadError(f"document exceeds maximum size: {path.name}")
+        data = yaml.load(raw.decode("utf-8"), Loader=_StrictSafeLoader)
+    except UnicodeDecodeError as exc:
+        raise BundleLoadError(f"invalid UTF-8 in {path.name}") from exc
     except yaml.YAMLError as exc:
         raise BundleLoadError(f"invalid YAML in {path.name}: {exc}") from exc
     if not isinstance(data, dict):
         raise BundleLoadError(f"record must be a YAML mapping: {path.name}")
+    _assert_resource_limits(data)
     return data
+
+
+def _assert_resource_limits(value: Any, depth: int = 1) -> None:
+    if depth > MAX_NESTING_DEPTH:
+        raise BundleLoadError("nesting depth exceeds maximum")
+    if isinstance(value, dict):
+        if len(value) > MAX_COLLECTION_ITEMS:
+            raise BundleLoadError("collection exceeds maximum size")
+        for child in value.values():
+            _assert_resource_limits(child, depth + 1)
+    elif isinstance(value, list):
+        if len(value) > MAX_COLLECTION_ITEMS:
+            raise BundleLoadError("collection exceeds maximum size")
+        for child in value:
+            _assert_resource_limits(child, depth + 1)
 
 
 def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str, Any]:
@@ -107,7 +134,10 @@ def load_records(directory: Path, required_records: tuple[str, ...]) -> dict[str
     if missing:
         raise BundleLoadError(f"missing canonical record: {missing[0]}")
 
-    return {
+    records = {
         filename.removesuffix(".yaml"): _load_mapping(path)
         for filename, path in entries.items()
     }
+    for name, record in records.items():
+        validate_record_schema(name, record)
+    return records

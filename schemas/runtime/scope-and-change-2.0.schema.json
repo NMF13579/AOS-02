@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aos02.dev/schemas/runtime/scope-and-change-2.0.schema.json",
+  "title": "AOS-02 Runtime Scope and Change v2",
+  "type": "object",
+  "required": ["record_type", "schema_version", "scope_id", "idea_binding", "baseline_binding", "allowed_paths", "forbidden_paths"],
+  "properties": {
+    "record_type": {"const": "SCOPE_AND_CHANGE"},
+    "schema_version": {"const": "2.0"},
+    "scope_id": {"type": "string", "minLength": 1},
+    "idea_binding": {"type": "string", "minLength": 1},
+    "baseline_binding": {"type": "string", "minLength": 1},
+    "allowed_paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "forbidden_paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}
