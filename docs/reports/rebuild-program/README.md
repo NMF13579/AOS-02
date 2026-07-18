@@ -23,3 +23,4 @@ This directory holds the planning, audit, and later stage reports for the AOS-02
 | R2 clean package skeleton | Behavior-preserving modular layout and deterministic core boundary | `COMPLETE` | [Open](r2-clean-package-skeleton.md) |
 | R3 validated workflow vertical slice | Discoverable installed-package control loop and explicit blocked-execution boundary | `COMPLETE` | [Open](r3-validated-workflow-vertical-slice.md) |
 | R4 clean install and bootstrap | Fresh non-hermetic installation, embedded schema check, CLI and full suite | `COMPLETE_NON_HERMETIC` | [Open](r4-clean-install-and-bootstrap.md) |
+| R5 documentation and dogfood | Owner workflow, fictional example, documentation-only dogfood, and checklist | `COMPLETE` | [Open](r5-documentation-and-dogfood.md) |
