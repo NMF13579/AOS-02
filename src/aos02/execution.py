@@ -85,7 +85,7 @@ def execute_scoped_request(
     if len(operation_paths) != len(set(operation_paths)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
     targets = [(sandbox / operation_path).resolve() for operation_path in operation_paths]
-    if any(target == evidence_target or target in evidence_target.parents for target in targets):
+    if any(target == evidence_target or target in evidence_target.parents or evidence_target in target.parents for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["EVIDENCE_ARTIFACT_PATH_RESERVED"]))
     if any(sandbox not in target.parents for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
