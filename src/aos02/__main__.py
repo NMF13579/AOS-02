@@ -9,6 +9,7 @@ from typing import Any
 
 import yaml
 
+from .execution import execute_scoped_request
 from .execution_decision import validate_human_execution_decision
 from .execution_preview import preview_scoped_execution
 from .result_decision import validate_human_result_decision
@@ -52,6 +53,9 @@ def main(argv: list[str] | None = None) -> int:
     validate_execution.add_argument("bundle", type=Path)
     preview_execution = subcommands.add_parser("preview-execution", help="produce a non-mutating scoped execution preview")
     preview_execution.add_argument("bundle", type=Path)
+    execute_scoped = subcommands.add_parser("execute-scoped", help="execute an authorized request only below an explicit sandbox root")
+    execute_scoped.add_argument("bundle", type=Path)
+    execute_scoped.add_argument("--root", type=Path, required=True, help="explicit sandbox root for all file writes")
     args = parser.parse_args(argv)
     try:
         if args.command == "validate":
@@ -72,10 +76,15 @@ def main(argv: list[str] | None = None) -> int:
             result = validate_human_execution_decision(
                 task=records["task"], decision=records["execution-decision"],
             )
-        else:
+        elif args.command == "preview-execution":
             records = load_records(args.bundle, EXECUTION_PREVIEW_RECORDS)
             result = preview_scoped_execution(
                 task=records["task"], decision=records["execution-decision"], request=records["execution-request"],
+            )
+        else:
+            records = load_records(args.bundle, EXECUTION_PREVIEW_RECORDS)
+            result = execute_scoped_request(
+                root=args.root, task=records["task"], decision=records["execution-decision"], request=records["execution-request"],
             )
     except (OSError, ValueError, TaskBriefError, yaml.YAMLError) as exc:
         result = {

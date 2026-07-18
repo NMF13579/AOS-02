@@ -3,3 +3,7 @@ task_binding: EXAMPLE-TASK-001
 operations:
   - action: WRITE
     path: docs/example.md
+    content: |
+      # AOS-02 sandbox example
+
+      This file was created only inside the explicit execution sandbox.
