@@ -5,17 +5,22 @@ from __future__ import annotations
 from typing import Any
 
 from .execution_preview import preview_scoped_execution
-from .runtime_records import EVIDENCE_SCHEMA_VERSION
 
 
-def _blocked_evidence(reasons: list[str]) -> dict[str, Any]:
+def _blocked_outcome(*, task: dict[str, Any], reasons: list[str]) -> dict[str, Any]:
     return {
-        "record_type": "EVIDENCE_REPORT",
-        "schema_version": EVIDENCE_SCHEMA_VERSION,
-        "status": "BLOCKED",
+        "record_type": "EXECUTION_OUTCOME",
+        "schema_version": "2.0",
+        "task_binding": task.get("task_id"),
+        "baseline_binding": task.get("baseline_binding"),
+        "technical_status": "BLOCKED",
         "reason_codes": reasons,
         "checks": [{"name": "scoped_execution", "status": "NOT_RUN"}],
         "execution_authorized": False,
+        "commit_authorized": False,
+        "push_authorized": False,
+        "merge_authorized": False,
+        "release_authorized": False,
     }
 
 
@@ -31,4 +36,4 @@ def execute_scoped_request(
     del root
     preview = preview_scoped_execution(task=task, decision=decision, request=request)
     reasons = sorted(set([*preview.get("reason_codes", []), "MUTATING_EXECUTOR_DISABLED"]))
-    return _blocked_evidence(reasons)
+    return _blocked_outcome(task=task, reasons=reasons)

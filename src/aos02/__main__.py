@@ -90,6 +90,8 @@ def main(argv: list[str] | None = None) -> int:
             "lifecycle_mutated": False,
         }
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    if result.get("validation", {}).get("status") == "FAIL":
+        return 3
     if args.command in {"validate-execution", "preview-execution", "execute-scoped"}:
         return 4
     return 0

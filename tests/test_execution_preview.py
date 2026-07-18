@@ -1,25 +1,13 @@
 from aos02.execution_preview import preview_scoped_execution
-
-
-def task():
-    return {"task_id": "TASK-1", "allowed_paths": ["docs/example.md"]}
-
-
-def decision():
-    return {
-        "record_type": "HUMAN_EXECUTION_DECISION",
-        "decision_value": "ALLOW_LOCAL_EXECUTION",
-        "task_binding": "TASK-1",
-        "decided_by": "HUMAN_OWNER",
-        "allowed_paths": ["docs/example.md"],
-    }
+from runtime_v2_fixtures import execution_decision as decision
+from runtime_v2_fixtures import execution_request, task
 
 
 def test_preview_returns_plan_but_blocks_execution_without_trusted_authority():
     result = preview_scoped_execution(
         task=task(),
         decision=decision(),
-        request={"record_type": "EXECUTION_REQUEST", "task_binding": "TASK-1", "operations": [{"action": "WRITE", "path": "docs/example.md"}]},
+        request=execution_request(),
     )
 
     assert result["state"] == "PREVIEW_BLOCKED"
@@ -33,7 +21,10 @@ def test_preview_blocks_request_outside_authorized_scope():
     result = preview_scoped_execution(
         task=task(),
         decision=decision(),
-        request={"record_type": "EXECUTION_REQUEST", "task_binding": "TASK-1", "operations": [{"action": "WRITE", "path": "src/main.py"}]},
+        request={
+            **execution_request(),
+            "operations": [{"action": "WRITE", "path": "src/main.py", "content": ""}],
+        },
     )
 
     assert result["state"] == "PREVIEW_BLOCKED"

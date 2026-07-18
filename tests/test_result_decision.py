@@ -1,28 +1,12 @@
 from aos02.result_decision import validate_human_result_decision
-
-
-def evidence():
-    return {
-        "record_type": "EVIDENCE_REPORT",
-        "evidence_id": "EVIDENCE-1",
-        "task_binding": "TASK-1",
-        "checks": [{"name": "markdown", "status": "PASS"}],
-        "unknowns": [],
-        "not_run": [],
-    }
+from runtime_v2_fixtures import evidence, result_decision, task
 
 
 def test_valid_human_acceptance_is_bound_to_task_and_evidence_without_git_grant():
     result = validate_human_result_decision(
-        task={"task_id": "TASK-1"},
+        task=task(),
         evidence=evidence(),
-        decision={
-            "record_type": "HUMAN_RESULT_DECISION",
-            "decision_value": "ACCEPT",
-            "task_binding": "TASK-1",
-            "evidence_binding": "EVIDENCE-1",
-            "decided_by": "HUMAN_OWNER",
-        },
+        decision=result_decision(),
     )
 
     assert result["valid"] is True
@@ -36,15 +20,9 @@ def test_result_decision_cannot_accept_unrun_evidence():
     report["checks"][0]["status"] = "NOT_RUN"
 
     result = validate_human_result_decision(
-        task={"task_id": "TASK-1"},
+        task=task(),
         evidence=report,
-        decision={
-            "record_type": "HUMAN_RESULT_DECISION",
-            "decision_value": "ACCEPT",
-            "task_binding": "TASK-1",
-            "evidence_binding": "EVIDENCE-1",
-            "decided_by": "HUMAN_OWNER",
-        },
+        decision=result_decision(),
     )
 
     assert result["valid"] is False
@@ -52,17 +30,11 @@ def test_result_decision_cannot_accept_unrun_evidence():
 
 
 def test_result_decision_rejects_implicit_git_authority():
+    decision = result_decision()
+    decision["push_authorized"] = True
+
     result = validate_human_result_decision(
-        task={"task_id": "TASK-1"},
-        evidence=evidence(),
-        decision={
-            "record_type": "HUMAN_RESULT_DECISION",
-            "decision_value": "ACCEPT",
-            "task_binding": "TASK-1",
-            "evidence_binding": "EVIDENCE-1",
-            "decided_by": "HUMAN_OWNER",
-            "push_authorized": True,
-        },
+        task=task(), evidence=evidence(), decision=decision
     )
 
     assert result["valid"] is False

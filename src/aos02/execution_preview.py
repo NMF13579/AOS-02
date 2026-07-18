@@ -28,6 +28,10 @@ def preview_scoped_execution(
         reasons.append("LOCAL_EXECUTION_NOT_AUTHORIZED")
     if reasons:
         return {
+            "record_type": "EXECUTION_PREVIEW",
+            "schema_version": "2.0",
+            "task_binding": task.get("task_id"),
+            "baseline_binding": task.get("baseline_binding"),
             "state": "PREVIEW_BLOCKED",
             "execution_readiness": "BLOCKED",
             "reason_codes": sorted(set(reasons)),
@@ -36,6 +40,10 @@ def preview_scoped_execution(
             "operations": [{"action": item.get("action"), "path": item.get("path")} for item in operations if isinstance(item, dict)],
         }
     return {
+        "record_type": "EXECUTION_PREVIEW",
+        "schema_version": "2.0",
+        "task_binding": task.get("task_id"),
+        "baseline_binding": task.get("baseline_binding"),
         "state": "PREVIEW_READY",
         "reason_codes": [],
         "will_modify_files": False,

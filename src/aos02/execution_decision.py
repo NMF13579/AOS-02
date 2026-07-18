@@ -11,14 +11,16 @@ FORBIDDEN_GIT_FIELDS = {"commit_authorized", "push_authorized", "merge_authorize
 def validate_human_execution_decision(*, task: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     """Validate a bounded local-execution grant without performing any action."""
     reasons: list[str] = []
-    if decision.get("record_type") != "HUMAN_EXECUTION_DECISION":
+    if decision.get("record_type") != "HUMAN_DECISION_RECORD" or decision.get(
+        "decision_type"
+    ) != "EXECUTION":
         reasons.append("WRONG_DECISION_TYPE")
     if decision.get("decided_by") != "HUMAN_OWNER":
         reasons.append("HUMAN_DECIDER_REQUIRED")
-    if decision.get("task_binding") != task.get("task_id"):
+    if decision.get("scope_binding") != task.get("task_id"):
         reasons.append("TASK_BINDING_MISMATCH")
-    if decision.get("allowed_paths") != task.get("allowed_paths"):
-        reasons.append("EXECUTION_SCOPE_MISMATCH")
+    if decision.get("status") != "HUMAN_ACCEPTED":
+        reasons.append("DECISION_NOT_HUMAN_ACCEPTED")
     if any(decision.get(field) is True for field in FORBIDDEN_GIT_FIELDS):
         reasons.append("FORBIDDEN_GIT_AUTHORITY_CLAIM")
     if not reasons and decision.get("decision_value") not in {"ALLOW_LOCAL_EXECUTION", "DENY", "NEEDS_CHANGES"}:

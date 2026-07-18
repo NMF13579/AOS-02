@@ -2,15 +2,20 @@ import json
 import subprocess
 import sys
 
+import yaml
+
+from runtime_v2_fixtures import evidence, result_decision, task
+
 
 def test_cli_validates_bound_human_result_decision(tmp_path):
-    (tmp_path / "task.yaml").write_text("task_id: TASK-1\n")
-    (tmp_path / "evidence.yaml").write_text(
-        "evidence_id: EVIDENCE-1\ntask_binding: TASK-1\nchecks:\n  - name: markdown\n    status: PASS\nunknowns: []\nnot_run: []\n"
-    )
-    (tmp_path / "result-decision.yaml").write_text(
-        "record_type: HUMAN_RESULT_DECISION\ndecision_value: ACCEPT\ntask_binding: TASK-1\nevidence_binding: EVIDENCE-1\ndecided_by: HUMAN_OWNER\n"
-    )
+    for name, record in {
+        "task": task(),
+        "evidence": evidence(),
+        "result-decision": result_decision(),
+    }.items():
+        (tmp_path / f"{name}.yaml").write_text(
+            yaml.safe_dump(record, sort_keys=False), encoding="utf-8"
+        )
 
     result = subprocess.run(
         [sys.executable, "-m", "aos02", "validate-result", str(tmp_path)],

@@ -12,12 +12,16 @@ def validate_human_publication_decision(
 ) -> dict[str, Any]:
     """Record bounded human publication intent; never grant Git authority itself."""
     reasons: list[str] = []
-    if decision.get("record_type") != "HUMAN_PUBLICATION_DECISION":
+    if decision.get("record_type") != "HUMAN_DECISION_RECORD" or decision.get(
+        "decision_type"
+    ) != "PUSH":
         reasons.append("WRONG_DECISION_TYPE")
     if decision.get("decided_by") != "HUMAN_OWNER":
         reasons.append("HUMAN_DECIDER_REQUIRED")
-    if decision.get("task_binding") != task.get("task_id"):
+    if decision.get("scope_binding") != task.get("task_id"):
         reasons.append("TASK_BINDING_MISMATCH")
+    if decision.get("status") != "HUMAN_ACCEPTED":
+        reasons.append("DECISION_NOT_HUMAN_ACCEPTED")
     if decision.get("evidence_binding") != evidence.get("evidence_id"):
         reasons.append("EVIDENCE_BINDING_MISMATCH")
     if any(decision.get(field) is True for field in FORBIDDEN_GIT_FIELDS):

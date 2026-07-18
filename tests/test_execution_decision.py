@@ -1,23 +1,6 @@
 from aos02.execution_decision import validate_human_execution_decision
-
-
-def task():
-    return {
-        "task_id": "TASK-1",
-        "status": "DRAFT",
-        "allowed_paths": ["docs/example.md"],
-        "forbidden_paths": ["src/"],
-    }
-
-
-def decision():
-    return {
-        "record_type": "HUMAN_EXECUTION_DECISION",
-        "decision_value": "ALLOW_LOCAL_EXECUTION",
-        "task_binding": "TASK-1",
-        "decided_by": "HUMAN_OWNER",
-        "allowed_paths": ["docs/example.md"],
-    }
+from runtime_v2_fixtures import execution_decision as decision
+from runtime_v2_fixtures import task
 
 
 def test_local_human_execution_decision_is_structurally_valid_but_untrusted():
@@ -34,12 +17,12 @@ def test_local_human_execution_decision_is_structurally_valid_but_untrusted():
 
 def test_execution_decision_blocks_scope_expansion():
     expanded = decision()
-    expanded["allowed_paths"] = ["docs/example.md", "src/main.py"]
+    expanded["scope_binding"] = "TASK-OTHER"
 
     result = validate_human_execution_decision(task=task(), decision=expanded)
 
     assert result["valid"] is False
-    assert "EXECUTION_SCOPE_MISMATCH" in result["reason_codes"]
+    assert "TASK_BINDING_MISMATCH" in result["reason_codes"]
 
 
 def test_execution_decision_rejects_implicit_publication_authority():

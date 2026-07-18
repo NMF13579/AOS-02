@@ -1,17 +1,10 @@
 from aos02.publication_decision import validate_human_publication_decision
+from runtime_v2_fixtures import evidence, publication_decision, task
 
 
 def test_human_publication_decision_records_intent_but_not_git_authority():
     result = validate_human_publication_decision(
-        task={"task_id": "TASK-1"},
-        evidence={"evidence_id": "EVIDENCE-1"},
-        decision={
-            "record_type": "HUMAN_PUBLICATION_DECISION",
-            "decision_value": "AUTHORIZE_PUBLICATION",
-            "task_binding": "TASK-1",
-            "evidence_binding": "EVIDENCE-1",
-            "decided_by": "HUMAN_OWNER",
-        },
+        task=task(), evidence=evidence(), decision=publication_decision()
     )
 
     assert result["valid"] is True
@@ -21,17 +14,11 @@ def test_human_publication_decision_records_intent_but_not_git_authority():
 
 
 def test_publication_decision_rejects_implicit_git_authority():
+    decision = publication_decision()
+    decision["push_authorized"] = True
+
     result = validate_human_publication_decision(
-        task={"task_id": "TASK-1"},
-        evidence={"evidence_id": "EVIDENCE-1"},
-        decision={
-            "record_type": "HUMAN_PUBLICATION_DECISION",
-            "decision_value": "AUTHORIZE_PUBLICATION",
-            "task_binding": "TASK-1",
-            "evidence_binding": "EVIDENCE-1",
-            "decided_by": "HUMAN_OWNER",
-            "push_authorized": True,
-        },
+        task=task(), evidence=evidence(), decision=decision
     )
 
     assert result["valid"] is False

@@ -1,14 +1,10 @@
 from aos02.validation import validate_bundle
+from runtime_v2_fixtures import full_bundle
 
 
 def valid_bundle():
-    return {
-        "idea": {"record_type": "IDEA_RECORD", "idea_id": "IDEA-1", "unknowns": []},
-        "risk": {"record_type": "RISK_PROFILE", "risk_id": "RISK-1", "idea_binding": "IDEA-1", "selected_level": "LOW_RISK_DOCUMENTATION_ONLY", "decided_by": "HUMAN_OWNER"},
-        "scope": {"record_type": "SCOPE_AND_CHANGE", "scope_id": "SCOPE-1", "idea_binding": "IDEA-1", "allowed_paths": ["docs/example.md"], "forbidden_paths": ["src/"]},
-        "task": {"record_type": "TASK_BRIEF", "task_id": "TASK-1", "idea_binding": "IDEA-1", "risk_binding": "RISK-1", "scope_binding": "SCOPE-1", "required_checks": ["markdown"]},
-        "evidence": {"record_type": "EVIDENCE_REPORT", "task_binding": "TASK-1", "checks": [{"name": "markdown", "status": "PASS"}], "unknowns": [], "not_run": []},
-    }
+    records = full_bundle()
+    return {name: records[name] for name in ("idea", "risk", "scope", "task", "evidence")}
 
 
 def test_complete_evidence_requires_human_review_not_auto_approval():
