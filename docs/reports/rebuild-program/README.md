@@ -22,3 +22,4 @@ This directory holds the planning, audit, and later stage reports for the AOS-02
 | R1 target contract consolidation | Domain/application/infrastructure/interface map and compatibility boundary | `COMPLETE` | [Open](r1-target-contract-consolidation.md) |
 | R2 clean package skeleton | Behavior-preserving modular layout and deterministic core boundary | `COMPLETE` | [Open](r2-clean-package-skeleton.md) |
 | R3 validated workflow vertical slice | Discoverable installed-package control loop and explicit blocked-execution boundary | `COMPLETE` | [Open](r3-validated-workflow-vertical-slice.md) |
+| R4 clean install and bootstrap | Fresh non-hermetic installation, embedded schema check, CLI and full suite | `COMPLETE_NON_HERMETIC` | [Open](r4-clean-install-and-bootstrap.md) |
