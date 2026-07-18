@@ -2,7 +2,7 @@
 
 AOS-02 is a greenfield, human-governed AI engineering control core.
 
-This repository provides a local validator, draft Task Brief compiler, scoped sandbox executor, runtime schema contracts, and CI test configuration. It has no authority for autonomous execution, Git operations, publication, merge, release, or human approval.
+This repository provides a local validator, draft Task Brief compiler, scoped execution preview, runtime schema contracts, and CI test configuration. Its execution endpoint is deliberately non-mutating until trusted human authority and a bounded mutating executor are separately implemented. It has no authority for autonomous execution, Git operations, publication, merge, release, or human approval.
 
 ## Canonical starting documents
 

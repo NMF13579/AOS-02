@@ -16,8 +16,9 @@ def test_cli_validates_bound_execution_decision(tmp_path):
         check=False,
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 4
     payload = json.loads(result.stdout)
-    assert payload["valid"] is True
-    assert payload["local_execution_authorized"] is True
+    assert payload["structural_validation"]["status"] == "PASS"
+    assert payload["authority_validation"]["status"] == "UNTRUSTED"
+    assert payload["local_execution_authorized"] is False
     assert payload["push_authorized"] is False

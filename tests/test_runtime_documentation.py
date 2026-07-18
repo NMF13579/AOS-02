@@ -9,6 +9,9 @@ def test_runtime_documentation_has_the_verified_clean_environment_command_path()
     assert "documentation only" not in readme.lower()
     assert '.venv/bin/pip install -e ".[test]"' in runtime_guide
     assert ".venv/bin/python -m pytest" in runtime_guide
+    assert "non-mutating control core" in runtime_guide.lower()
+    assert "MUTATING_EXECUTOR_DISABLED" in runtime_guide
+    assert "mkdir -p /tmp/aos02-example-sandbox" not in runtime_guide
     for command in (
         "validate examples/first-bundle",
         "compile-task examples/first-bundle",

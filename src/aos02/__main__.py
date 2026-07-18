@@ -108,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
             "lifecycle_mutated": False,
         }
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    if args.command in {"validate-execution", "preview-execution", "execute-scoped"}:
+        return 4
     return 0
 
 

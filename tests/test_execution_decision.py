@@ -20,11 +20,14 @@ def decision():
     }
 
 
-def test_bound_human_execution_decision_allows_only_local_execution():
+def test_local_human_execution_decision_is_structurally_valid_but_untrusted():
     result = validate_human_execution_decision(task=task(), decision=decision())
 
-    assert result["valid"] is True
-    assert result["local_execution_authorized"] is True
+    assert result["structural_validation"]["status"] == "PASS"
+    assert result["authority_validation"]["status"] == "UNTRUSTED"
+    assert result["control"]["state"] == "CONTROL_BLOCKED"
+    assert result["local_execution_authorized"] is False
+    assert "LOCAL_DECLARED_HUMAN_REFERENCE_NOT_TRUSTED" in result["reason_codes"]
     assert result["commit_authorized"] is False
     assert result["push_authorized"] is False
 

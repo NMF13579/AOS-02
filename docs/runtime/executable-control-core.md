@@ -1,12 +1,28 @@
 # AOS-02 Executable Control Core
 
-The first executable component is a **read-only local validator** for canonical YAML bundles. It implements the accepted documentation workflow:
+The current executable component is a **non-mutating control core** for canonical YAML bundles. It implements the accepted documentation workflow:
 
 ```text
 Idea -> Risk + Scope -> Task Brief -> Evidence -> Human Review
 ```
 
-It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidden approval claims. It can also compile a **DRAFT-only** Task Brief from Idea/Risk/Scope records. The scoped executor requires an explicit sandbox root, writes only approved `WRITE` content below that root, and returns Evidence. It does not create human decisions, touch Git, connect to a network, or grant authority.
+It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidden approval claims. It can compile a **DRAFT-only** Task Brief from Idea/Risk/Scope records. It can validate a local Human Execution Decision structurally and produce a non-mutating preview.
+
+## Safety boundary
+
+Local YAML is not a trusted source of human authority. A structurally valid local record remains:
+
+```yaml
+structural_validation:
+  status: PASS
+authority_validation:
+  status: UNTRUSTED
+control:
+  state: CONTROL_BLOCKED
+execution_authorized: false
+```
+
+The mutating executor is deliberately disabled. `execute-scoped` returns a blocked Evidence-style result with `MUTATING_EXECUTOR_DISABLED`; it does not create the requested files, directories, `.aos02`, Evidence artifacts, or temporary files.
 
 ## Run locally
 
@@ -15,20 +31,12 @@ python3.11 -m venv .venv
 .venv/bin/pip install -e ".[test]"
 .venv/bin/python -m aos02 validate examples/first-bundle
 .venv/bin/python -m aos02 compile-task examples/first-bundle --task-id EXAMPLE-TASK-DRAFT-002 --check markdown
-.venv/bin/python -m aos02 validate-execution examples/first-bundle
-.venv/bin/python -m aos02 preview-execution examples/first-bundle
-mkdir -p /tmp/aos02-example-sandbox
-.venv/bin/python -m aos02 execute-scoped examples/first-bundle --root /tmp/aos02-example-sandbox
+.venv/bin/python -m aos02 validate-execution examples/first-bundle  # exits 4: authority untrusted
+.venv/bin/python -m aos02 preview-execution examples/first-bundle   # exits 4: readiness blocked
+.venv/bin/python -m aos02 execute-scoped examples/first-bundle --root /tmp/aos02-example-sandbox  # exits 4: MUTATING_EXECUTOR_DISABLED
 .venv/bin/python -m aos02 validate-result examples/first-bundle
+.venv/bin/python -m aos02 validate-publication examples/first-bundle
 .venv/bin/python -m pytest
 ```
 
-A successful technical result still returns:
-
-```yaml
-control:
-  state: CONTROL_HUMAN_REVIEW_REQUIRED
-approval_granted: false
-```
-
-Human review and any execution remain separate, external decisions.
+A technical PASS is not approval. Human review and any future trusted execution remain separate external decisions.

@@ -27,7 +27,14 @@ def preview_scoped_execution(
     if not validation["local_execution_authorized"]:
         reasons.append("LOCAL_EXECUTION_NOT_AUTHORIZED")
     if reasons:
-        return {"state": "PREVIEW_BLOCKED", "reason_codes": sorted(set(reasons)), "will_modify_files": False, "operation_count": 0}
+        return {
+            "state": "PREVIEW_BLOCKED",
+            "execution_readiness": "BLOCKED",
+            "reason_codes": sorted(set(reasons)),
+            "will_modify_files": False,
+            "operation_count": len(operations),
+            "operations": [{"action": item.get("action"), "path": item.get("path")} for item in operations if isinstance(item, dict)],
+        }
     return {
         "state": "PREVIEW_READY",
         "reason_codes": [],
