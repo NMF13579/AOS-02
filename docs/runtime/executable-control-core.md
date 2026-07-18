@@ -12,7 +12,7 @@ It validates record bindings, required checks, `UNKNOWN`, `NOT_RUN`, and forbidd
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/pip install . pytest
+.venv/bin/pip install -e ".[test]"
 .venv/bin/python -m aos02 validate examples/first-bundle
 .venv/bin/python -m aos02 compile-task examples/first-bundle --task-id EXAMPLE-TASK-DRAFT-002 --check markdown
 .venv/bin/python -m aos02 validate-execution examples/first-bundle

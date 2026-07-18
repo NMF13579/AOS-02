@@ -1,8 +1,8 @@
 # AOS-02
 
-AOS-02 is a greenfield, human-governed AI engineering system.
+AOS-02 is a greenfield, human-governed AI engineering control core.
 
-This initial repository state contains **documentation only**. It does not contain an implementation, runtime, CI, dependencies, release process, or any authority for autonomous execution.
+This repository provides a local validator, draft Task Brief compiler, scoped sandbox executor, runtime schema contracts, and CI test configuration. It has no authority for autonomous execution, Git operations, publication, merge, release, or human approval.
 
 ## Canonical starting documents
 
@@ -12,6 +12,10 @@ This initial repository state contains **documentation only**. It does not conta
 - [Manual Control Workflow v0](docs/workflows/idea-to-review-v0.md)
 - [Executable Control Core](docs/runtime/executable-control-core.md)
 - [Human Usability Review Packet](docs/reviews/manual-control-workflow-v0-human-review.md)
+
+## Verified local command path
+
+Use the clean-environment command sequence in the [Executable Control Core runtime guide](docs/runtime/executable-control-core.md#run-locally). It installs the declared test dependencies, exercises every v0 CLI command, uses an explicit sandbox root for the sole real execution command, and runs the full test suite.
 
 ## Important boundaries
 

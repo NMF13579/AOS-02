@@ -252,6 +252,19 @@ def test_executor_evidence_artifact_hashes_the_persisted_canonical_report(tmp_pa
     assert "evidence_artifact" not in persisted
 
 
+def test_executor_atomically_replaces_an_existing_operation_target(tmp_path):
+    target = tmp_path / "docs" / "example.md"
+    target.parent.mkdir()
+    target.write_text("previous complete content\n", encoding="utf-8")
+
+    with target.open(encoding="utf-8") as previous_reader:
+        execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+        previous_reader.seek(0)
+        assert previous_reader.read() == "previous complete content\n"
+
+    assert target.read_text(encoding="utf-8") == "safe content\n"
+
+
 def test_executor_atomically_replaces_an_existing_evidence_artifact(tmp_path):
     artifact = tmp_path / ".aos02" / "evidence-report.json"
     artifact.parent.mkdir()
@@ -279,7 +292,7 @@ def test_executor_syncs_evidence_directory_after_atomic_replace(tmp_path, monkey
 
     execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 
-    assert len(fsync_calls) == 2
+    assert len(fsync_calls) == 4
 
 
 def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path):

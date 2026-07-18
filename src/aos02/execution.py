@@ -76,24 +76,29 @@ def _sync_directory(directory: Path) -> None:
         os.close(descriptor)
 
 
-def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
-    """Atomically replace canonical execution evidence in the executor-owned path."""
-    target = _evidence_target(sandbox=sandbox)
+def _atomically_write_text(*, target: Path, content: str) -> None:
+    """Durably replace a regular target without exposing a partial write."""
     target.parent.mkdir(parents=True, exist_ok=True)
-    serialized = json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n"
     descriptor, temporary_name = tempfile.mkstemp(
         dir=target.parent, prefix=f".{target.name}.", suffix=".tmp"
     )
     temporary_path = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as temporary_file:
-            temporary_file.write(serialized)
+            temporary_file.write(content)
             temporary_file.flush()
             os.fsync(temporary_file.fileno())
         os.replace(temporary_path, target)
         _sync_directory(target.parent)
     finally:
         temporary_path.unlink(missing_ok=True)
+
+
+def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
+    """Atomically replace canonical execution evidence in the executor-owned path."""
+    target = _evidence_target(sandbox=sandbox)
+    serialized = json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n"
+    _atomically_write_text(target=target, content=serialized)
     return {
         "path": target.relative_to(sandbox).as_posix(),
         "sha256": sha256(target.read_bytes()).hexdigest(),
@@ -150,8 +155,7 @@ def execute_scoped_request(
 
     performed: list[dict[str, str]] = []
     for operation, target in zip(operations, targets):
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(operation["content"], encoding="utf-8")
+        _atomically_write_text(target=target, content=operation["content"])
         performed.append({"path": operation["path"], "sha256": sha256(target.read_bytes()).hexdigest()})
 
     evidence = {
