@@ -33,15 +33,16 @@ def same_or_ancestor(parent: str, child: str) -> bool:
 def validate_task_paths(task: dict[str, Any]) -> list[str]:
     allowed = task.get("allowed_paths", [])
     forbidden = task.get("forbidden_paths", [])
+    reasons: list[str] = []
     if not isinstance(allowed, list) or not isinstance(forbidden, list):
         return ["INVALID_SCOPE_PATH_LIST"]
     paths = [*allowed, *forbidden]
     if any(not is_portable_repository_path(path) for path in paths):
-        return ["NONPORTABLE_SCOPE_PATH"]
-    allowed_keys = [collision_key(path) for path in allowed]
-    forbidden_keys = [collision_key(path) for path in forbidden]
-    if len(allowed_keys) != len(set(allowed_keys)) or len(forbidden_keys) != len(set(forbidden_keys)):
-        return ["PORTABILITY_PATH_COLLISION"]
+        reasons.append("NONPORTABLE_SCOPE_PATH")
+    allowed_keys = [collision_key(path) for path in allowed if isinstance(path, str)]
+    forbidden_keys = [collision_key(path) for path in forbidden if isinstance(path, str)]
+    if len(allowed_keys) != len(allowed) or len(forbidden_keys) != len(forbidden) or len(allowed_keys) != len(set(allowed_keys)) or len(forbidden_keys) != len(set(forbidden_keys)):
+        reasons.append("PORTABILITY_PATH_COLLISION")
     if any(same_or_ancestor(left, right) or same_or_ancestor(right, left) for left in allowed_keys for right in forbidden_keys):
-        return ["SCOPE_CONFLICT"]
-    return []
+        reasons.append("SCOPE_CONFLICT")
+    return reasons

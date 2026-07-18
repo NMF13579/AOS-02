@@ -6,6 +6,7 @@ from typing import Any
 import unicodedata
 
 from .execution_decision import validate_human_execution_decision
+from .path_semantics import validate_task_paths
 
 WINDOWS_RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}
 
@@ -45,6 +46,7 @@ def preview_scoped_execution(
     """Produce a deterministic execution preview; this function never writes files."""
     validation = validate_human_execution_decision(task=task, decision=decision)
     reasons = list(validation["reason_codes"])
+    reasons.extend(validate_task_paths(task))
     if request.get("record_type") != "EXECUTION_REQUEST":
         reasons.append("WRONG_REQUEST_TYPE")
     if request.get("task_binding") != task.get("task_id"):
