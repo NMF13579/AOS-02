@@ -25,3 +25,16 @@ def test_git_preflight_blocks_dirty_or_unapproved_state():
 
     assert result["state"] == "GIT_PREFLIGHT_BLOCKED"
     assert set(result["reason_codes"]) >= {"PUBLICATION_DECISION_REQUIRED", "WORKTREE_NOT_CLEAN", "UPSTREAM_REQUIRED"}
+
+
+def test_git_preflight_blocks_protected_primary_branch_even_with_clean_human_intent():
+    result = evaluate_git_preflight(
+        publication_decision={"valid": True, "publication_decision_recorded": True},
+        branch="main",
+        upstream="origin/main",
+        porcelain_status="",
+        divergence="0\t0",
+    )
+
+    assert result["state"] == "GIT_PREFLIGHT_BLOCKED"
+    assert "PROTECTED_BRANCH_PUBLICATION_BLOCKED" in result["reason_codes"]

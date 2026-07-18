@@ -19,6 +19,8 @@ def evaluate_git_preflight(
         reasons.append("PUBLICATION_DECISION_REQUIRED")
     if not branch:
         reasons.append("BRANCH_REQUIRED")
+    elif branch in {"main", "master"}:
+        reasons.append("PROTECTED_BRANCH_PUBLICATION_BLOCKED")
     if not upstream:
         reasons.append("UPSTREAM_REQUIRED")
     if porcelain_status.strip():
