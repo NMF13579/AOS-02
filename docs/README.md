@@ -22,6 +22,7 @@ This page is a navigation aid for the current AOS-02 repository. It does not rep
 | Executable Control Core | Local validator, preview, schemas, and explicit non-mutating execution boundary | `CURRENT_VERIFIED_STATE` | [Open](runtime/executable-control-core.md) |
 | Runtime mapping v2 | Canonical contract to runtime representation mapping | `CURRENT_VERIFIED_STATE` | [Open](runtime/canonical-contract-runtime-mapping-v2.md) |
 | Human review packet | Review-oriented explanation of the manual workflow | `EVIDENCE` | [Open](reviews/manual-control-workflow-v0-human-review.md) |
+| Project reports | Versioned implementation, validation, and preflight reports for AOS-02 stages | `TECHNICAL_EVIDENCE` | [Open](reports/README.md) |
 | Architecture decisions | Location and boundary for future ADRs | `CURRENT_ACCEPTED` | [Open](decisions/README.md) |
 
 ## Manual workflow aids
