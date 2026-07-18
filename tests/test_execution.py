@@ -102,6 +102,30 @@ def test_executor_blocks_operation_paths_that_resolve_to_the_same_target(tmp_pat
     assert result["reason_codes"] == ["DUPLICATE_OPERATION_PATH"]
 
 
+def test_executor_blocks_overlapping_operation_paths_before_any_write(tmp_path):
+    parent_path = "docs/generated"
+    child_path = "docs/generated/example.md"
+    overlapping_task = {"task_id": "TASK-1", "allowed_paths": [parent_path, child_path]}
+    overlapping_decision = decision()
+    overlapping_decision["allowed_paths"] = [parent_path, child_path]
+    overlapping_request = request(parent_path)
+    overlapping_request["operations"].append(
+        {"action": "WRITE", "path": child_path, "content": "child content\n"}
+    )
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=overlapping_task,
+        decision=overlapping_decision,
+        request=overlapping_request,
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["OVERLAPPING_OPERATION_PATH"]
+    assert not (tmp_path / parent_path).exists()
+    assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
+
+
 def test_executor_rejects_an_internal_symlinked_operation_path(tmp_path):
     symlink_task = {"task_id": "TASK-1", "allowed_paths": ["docs/link.md"]}
     symlink_decision = decision()

@@ -113,6 +113,8 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNWRITABLE_OPERATION_TARGET"]))
     if len(targets) != len(set(targets)):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
+    if any(target in other.parents for target in targets for other in targets if target != other):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["OVERLAPPING_OPERATION_PATH"]))
 
     performed: list[dict[str, str]] = []
     for operation, target in zip(operations, targets):
