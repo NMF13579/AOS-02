@@ -122,6 +122,15 @@ def test_executor_refuses_an_escaped_evidence_artifact_before_writing_operations
     assert not (outside / "evidence-report.json").exists()
 
 
+def test_executor_refuses_an_unwritable_evidence_artifact_before_writing_operations(tmp_path):
+    (tmp_path / ".aos02").write_text("not a directory", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="evidence artifact path is not writable"):
+        execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert not (tmp_path / "docs/example.md").exists()
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 

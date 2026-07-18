@@ -70,6 +70,8 @@ def execute_scoped_request(
     if sandbox.exists() and not sandbox.is_dir():
         raise ValueError("sandbox root must be a directory")
     evidence_target = _evidence_target(sandbox=sandbox)
+    if not _target_has_writable_file_path(sandbox=sandbox, target=evidence_target):
+        raise ValueError("evidence artifact path is not writable")
     preview = preview_scoped_execution(task=task, decision=decision, request=request)
     if preview["state"] != "PREVIEW_READY":
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
