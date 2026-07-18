@@ -67,6 +67,15 @@ def _evidence_target(*, sandbox: Path) -> Path:
     return target
 
 
+def _sync_directory(directory: Path) -> None:
+    """Persist an atomic replacement's directory entry before reporting success."""
+    descriptor = os.open(directory, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, str]:
     """Atomically replace canonical execution evidence in the executor-owned path."""
     target = _evidence_target(sandbox=sandbox)
@@ -82,6 +91,7 @@ def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, s
             temporary_file.flush()
             os.fsync(temporary_file.fileno())
         os.replace(temporary_path, target)
+        _sync_directory(target.parent)
     finally:
         temporary_path.unlink(missing_ok=True)
     return {

@@ -267,6 +267,21 @@ def test_executor_atomically_replaces_an_existing_evidence_artifact(tmp_path):
     assert result["evidence_artifact"]["sha256"] == sha256(artifact.read_bytes()).hexdigest()
 
 
+def test_executor_syncs_evidence_directory_after_atomic_replace(tmp_path, monkeypatch):
+    fsync_calls = []
+    original_fsync = os.fsync
+
+    def record_fsync(descriptor):
+        fsync_calls.append(descriptor)
+        original_fsync(descriptor)
+
+    monkeypatch.setattr("aos02.execution.os.fsync", record_fsync)
+
+    execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert len(fsync_calls) == 2
+
+
 def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path):
     reserved_task = {"task_id": "TASK-1", "allowed_paths": [".aos02/evidence-report.json"]}
     reserved_decision = decision()
