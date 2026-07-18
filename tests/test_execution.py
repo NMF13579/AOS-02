@@ -170,6 +170,25 @@ def test_executor_reserves_evidence_artifact_path_from_requested_writes(tmp_path
     assert "safe content" not in (tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8")
 
 
+def test_executor_reserves_evidence_artifact_parent_from_requested_writes(tmp_path):
+    reserved_task = {"task_id": "TASK-1", "allowed_paths": [".aos02"]}
+    reserved_decision = decision()
+    reserved_decision["allowed_paths"] = [".aos02"]
+
+    result = execute_scoped_request(
+        root=tmp_path,
+        task=reserved_task,
+        decision=reserved_decision,
+        request=request(".aos02"),
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["EVIDENCE_ARTIFACT_PATH_RESERVED"]
+    assert (tmp_path / ".aos02").is_dir()
+    persisted = json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))
+    assert persisted["status"] == "BLOCKED"
+
+
 def test_executor_reserves_evidence_artifact_path_aliases_from_requested_writes(tmp_path):
     reserved_task = {"task_id": "TASK-1", "allowed_paths": [".aos02/../.aos02/evidence-report.json"]}
     reserved_decision = decision()
