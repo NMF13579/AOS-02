@@ -1,3 +1,5 @@
+import json
+
 from aos02.execution import execute_scoped_request
 
 
@@ -54,3 +56,12 @@ def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     assert evidence_path.read_text(encoding="utf-8").endswith("\n")
     assert '"record_type": "EVIDENCE_REPORT"' in evidence_path.read_text(encoding="utf-8")
     assert result["evidence_artifact"]["path"] == ".aos02/evidence-report.json"
+
+
+def test_executor_persists_blocked_evidence_inside_explicit_sandbox_root(tmp_path):
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request("../escape.txt"))
+
+    evidence_path = tmp_path / ".aos02" / "evidence-report.json"
+    assert result["status"] == "BLOCKED"
+    assert evidence_path.is_file()
+    assert json.loads(evidence_path.read_text(encoding="utf-8"))["reason_codes"] == ["OPERATION_OUTSIDE_SCOPE"]

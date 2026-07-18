@@ -35,24 +35,30 @@ def _persist_evidence(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, s
     }
 
 
+def _persist_outcome(*, sandbox: Path, evidence: dict[str, Any]) -> dict[str, Any]:
+    """Attach a locator after storing the immutable execution outcome in the sandbox."""
+    evidence["evidence_artifact"] = _persist_evidence(sandbox=sandbox, evidence=evidence)
+    return evidence
+
+
 def execute_scoped_request(
     *, root: Path, task: dict[str, Any], decision: dict[str, Any], request: dict[str, Any]
 ) -> dict[str, Any]:
     """Execute allowed WRITE operations strictly below *root* and return Evidence."""
+    sandbox = root.resolve()
     preview = preview_scoped_execution(task=task, decision=decision, request=request)
     if preview["state"] != "PREVIEW_READY":
-        return _blocked_evidence(preview["reason_codes"])
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
 
-    sandbox = root.resolve()
     operations = request["operations"]
     if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
-        return _blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"])
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]))
 
     performed: list[dict[str, str]] = []
     for operation in operations:
         target = (sandbox / operation["path"]).resolve()
         if sandbox not in target.parents:
-            return _blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"])
+            return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(operation["content"], encoding="utf-8")
         performed.append({"path": operation["path"], "sha256": sha256(target.read_bytes()).hexdigest()})
@@ -66,5 +72,4 @@ def execute_scoped_request(
         "checks": [{"name": "scoped_execution", "status": "PASS"}],
         "operations": performed,
     }
-    evidence["evidence_artifact"] = _persist_evidence(sandbox=sandbox, evidence=evidence)
-    return evidence
+    return _persist_outcome(sandbox=sandbox, evidence=evidence)
