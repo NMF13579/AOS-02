@@ -1,0 +1,7 @@
+record_type: SCOPE_AND_CHANGE
+scope_id: EXAMPLE-SCOPE-001
+idea_binding: EXAMPLE-IDEA-001
+allowed_paths:
+  - docs/example.md
+forbidden_paths:
+  - src/

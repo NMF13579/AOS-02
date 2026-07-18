@@ -1,0 +1,7 @@
+record_type: TASK_BRIEF
+task_id: EXAMPLE-TASK-001
+idea_binding: EXAMPLE-IDEA-001
+risk_binding: EXAMPLE-RISK-001
+scope_binding: EXAMPLE-SCOPE-001
+required_checks:
+  - markdown

@@ -1,0 +1,7 @@
+record_type: EVIDENCE_REPORT
+task_binding: EXAMPLE-TASK-001
+checks:
+  - name: markdown
+    status: PASS
+unknowns: []
+not_run: []
