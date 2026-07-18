@@ -3,19 +3,27 @@
 from __future__ import annotations
 
 from typing import Any
+import unicodedata
 
 from .execution_decision import validate_human_execution_decision
 
+WINDOWS_RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}
+
 
 def _is_portable_repository_path(value: Any) -> bool:
-    return (
-        isinstance(value, str)
-        and bool(value)
-        and not value.startswith("/")
-        and "\\" not in value
-        and "\x00" not in value
-        and all(segment not in {"", ".", ".."} for segment in value.split("/"))
-    )
+    if not isinstance(value, str) or not value or value != unicodedata.normalize("NFC", value):
+        return False
+    if value.startswith("/") or "\\" in value or "\x00" in value or ":" in value:
+        return False
+    for segment in value.split("/"):
+        if not segment or segment in {".", ".."} or segment != segment.strip() or segment.endswith("."):
+            return False
+        if any(unicodedata.category(character).startswith("C") for character in segment):
+            return False
+        device_stem = segment.split(".", 1)[0].upper()
+        if device_stem in WINDOWS_RESERVED:
+            return False
+    return True
 
 
 def preview_scoped_execution(

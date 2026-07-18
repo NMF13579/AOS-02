@@ -42,6 +42,30 @@ def test_result_decision_cannot_accept_blocked_evidence_even_when_checks_pass() 
     assert "EVIDENCE_TECHNICAL_STATUS_NOT_PASS" in result["reason_codes"]
 
 
+def test_result_decision_cannot_accept_evidence_with_remaining_blockers() -> None:
+    report = evidence()
+    report["blockers"] = ["REMAINING_BLOCKER"]
+
+    result = validate_human_result_decision(
+        task=task(), evidence=report, decision=result_decision()
+    )
+
+    assert result["valid"] is False
+    assert result["result_accepted"] is False
+    assert "EVIDENCE_INCOMPLETE" in result["reason_codes"]
+
+
+def test_result_decision_blocks_stale_baseline_binding() -> None:
+    stale = result_decision()
+    stale["baseline_binding"] = "BASELINE-OTHER"
+
+    result = validate_human_result_decision(task=task(), evidence=evidence(), decision=stale)
+
+    assert result["valid"] is False
+    assert result["result_accepted"] is False
+    assert "BASELINE_BINDING_MISMATCH" in result["reason_codes"]
+
+
 def test_result_decision_rejects_implicit_git_authority():
     decision = result_decision()
     decision["push_authorized"] = True

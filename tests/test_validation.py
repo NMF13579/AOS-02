@@ -36,6 +36,17 @@ def test_unknown_required_field_blocks_bundle():
     assert result["control"]["state"] == "CONTROL_UNKNOWN_BLOCKED"
 
 
+def test_missing_check_name_is_detail_not_reason_code() -> None:
+    bundle = valid_bundle()
+    bundle["task"]["required_checks"] = ["arbitrary human free-form check"]
+    bundle["evidence"]["checks"] = []
+
+    result = validate_bundle(bundle)
+
+    assert result["reason_codes"] == ["MISSING_REQUIRED_CHECK"]
+    assert result["details"]["missing_checks"] == ["arbitrary human free-form check"]
+
+
 def test_false_approval_claim_is_rejected():
     bundle = valid_bundle()
     bundle["evidence"]["approval_granted"] = True

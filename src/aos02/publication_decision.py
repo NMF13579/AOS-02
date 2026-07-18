@@ -24,6 +24,8 @@ def validate_human_publication_decision(
         reasons.append("DECISION_NOT_HUMAN_ACCEPTED")
     if decision.get("evidence_binding") != evidence.get("evidence_id"):
         reasons.append("EVIDENCE_BINDING_MISMATCH")
+    if decision.get("baseline_binding") != task.get("baseline_binding") or evidence.get("baseline_binding") != task.get("baseline_binding"):
+        reasons.append("BASELINE_BINDING_MISMATCH")
     if any(decision.get(field) is True for field in FORBIDDEN_GIT_FIELDS):
         reasons.append("FORBIDDEN_GIT_AUTHORITY_CLAIM")
     recorded = not reasons and decision.get("decision_value") == "AUTHORIZE_PUBLICATION"

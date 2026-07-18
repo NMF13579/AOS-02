@@ -13,6 +13,17 @@ def test_human_publication_decision_records_intent_but_not_git_authority():
     assert result["push_authorized"] is False
 
 
+def test_publication_decision_blocks_stale_baseline_binding() -> None:
+    stale = publication_decision()
+    stale["baseline_binding"] = "BASELINE-OTHER"
+
+    result = validate_human_publication_decision(task=task(), evidence=evidence(), decision=stale)
+
+    assert result["valid"] is False
+    assert result["publication_decision_recorded"] is False
+    assert "BASELINE_BINDING_MISMATCH" in result["reason_codes"]
+
+
 def test_publication_decision_rejects_implicit_git_authority():
     decision = publication_decision()
     decision["push_authorized"] = True

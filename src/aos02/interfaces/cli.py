@@ -25,6 +25,12 @@ RESULT_DECISION_RECORDS = ("task", "evidence", "result-decision")
 PUBLICATION_DECISION_RECORDS = ("task", "evidence", "publication-decision")
 EXECUTION_DECISION_RECORDS = ("task", "execution-decision")
 EXECUTION_PREVIEW_RECORDS = ("task", "execution-decision", "execution-request")
+EXECUTION_AUTHORITY_BLOCK_REASONS = {
+    "LOCAL_DECLARED_HUMAN_REFERENCE_NOT_TRUSTED",
+    "LOCAL_EXECUTION_NOT_AUTHORIZED",
+    "MUTATING_EXECUTOR_DISABLED",
+    "TRUSTED_HUMAN_AUTHORITY_NOT_IMPLEMENTED",
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -103,5 +109,8 @@ def _semantic_exit_code(command: str, result: dict[str, object]) -> int:
     if result.get("valid") is False:
         return 3
     if command in {"validate-execution", "preview-execution", "execute-scoped"}:
+        reasons = result.get("reason_codes", [])
+        if not isinstance(reasons, list) or any(reason not in EXECUTION_AUTHORITY_BLOCK_REASONS for reason in reasons):
+            return 3
         return 4
     return 0

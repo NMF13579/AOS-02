@@ -60,18 +60,20 @@ def validate_bundle(bundle: dict[str, Any]) -> dict[str, Any]:
     not_run = [name for name in task.get("required_checks", []) if checks.get(name) == "NOT_RUN"]
     failed = [name for name in task.get("required_checks", []) if checks.get(name) == "FAIL"]
     if missing_checks:
-        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK", *missing_checks])
+        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK"], {"missing_checks": missing_checks})
     if not_run:
-        return _result("NOT_RUN", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["REQUIRED_CHECK_NOT_RUN", *not_run])
+        return _result("NOT_RUN", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["REQUIRED_CHECK_NOT_RUN"], {"not_run_checks": not_run})
     if failed:
-        return _result("FAIL", "CONTROL_BLOCKED", "FIX_TECHNICAL_FAILURE", ["REQUIRED_CHECK_FAILED", *failed])
+        return _result("FAIL", "CONTROL_BLOCKED", "FIX_TECHNICAL_FAILURE", ["REQUIRED_CHECK_FAILED"], {"failed_checks": failed})
     return _result("PASS", "CONTROL_HUMAN_REVIEW_REQUIRED", "HUMAN_REVIEW_RESULT", [])
 
 
-def _result(status: str, control_state: str, next_action: str, reasons: list[str]) -> dict[str, Any]:
+def _result(
+    status: str, control_state: str, next_action: str, reasons: list[str], details: dict[str, Any] | None = None
+) -> dict[str, Any]:
     return {
         "validation": {"status": status}, "control": {"state": control_state},
-        "reason_codes": reasons, "next_required_action": next_action,
+        "reason_codes": reasons, "details": details or {}, "next_required_action": next_action,
         "approval_granted": False, "execution_authorized": False,
         "commit_authorized": False, "push_authorized": False, "lifecycle_mutated": False,
     }

@@ -1,3 +1,5 @@
+import pytest
+
 from aos02.execution_preview import preview_scoped_execution
 from runtime_v2_fixtures import execution_decision as decision
 from runtime_v2_fixtures import execution_request, task
@@ -36,6 +38,21 @@ def test_preview_blocks_nonportable_path_even_when_task_lists_it_as_allowed() ->
     result = preview_scoped_execution(task=unsafe_task, decision=decision(), request=unsafe_request)
 
     assert result["state"] == "PREVIEW_BLOCKED"
+    assert "NONPORTABLE_OPERATION_PATH" in result["reason_codes"]
+
+
+@pytest.mark.parametrize(
+    "unsafe_path",
+    ["C:/escape", "CON", "NUL.txt", "docs/name.", "docs/ name ", "docs/\x01name", "docs/e\u0301.md"],
+)
+def test_preview_blocks_all_nonportable_contract_paths(unsafe_path: str) -> None:
+    unsafe_task = task()
+    unsafe_task["allowed_paths"] = [unsafe_path]
+    unsafe_request = execution_request()
+    unsafe_request["operations"] = [{"action": "WRITE", "path": unsafe_path, "content": ""}]
+
+    result = preview_scoped_execution(task=unsafe_task, decision=decision(), request=unsafe_request)
+
     assert "NONPORTABLE_OPERATION_PATH" in result["reason_codes"]
 
 

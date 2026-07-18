@@ -29,6 +29,20 @@ def test_validate_execution_structural_failure_returns_semantic_failure_exit(mon
     assert json.loads(capsys.readouterr().out)["structural_validation"]["status"] == "FAIL"
 
 
+def test_preview_semantic_failure_returns_exit_three(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        cli, "load_records", lambda *_: {"task": {}, "execution-decision": {}, "execution-request": {}}
+    )
+    monkeypatch.setattr(
+        cli,
+        "preview_scoped_execution",
+        lambda **_: {"state": "PREVIEW_BLOCKED", "reason_codes": ["REQUEST_BASELINE_BINDING_MISMATCH"]},
+    )
+
+    assert cli.main(["preview-execution", "unused"]) == 3
+    assert json.loads(capsys.readouterr().out)["state"] == "PREVIEW_BLOCKED"
+
+
 def test_unexpected_error_returns_json_exit_five_without_free_text_reason_code(monkeypatch, capsys) -> None:
     monkeypatch.setattr(cli, "load_records", lambda *_: (_ for _ in ()).throw(RuntimeError("secret detail")))
 
