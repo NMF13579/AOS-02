@@ -56,6 +56,38 @@ def test_preview_blocks_all_nonportable_contract_paths(unsafe_path: str) -> None
     assert "NONPORTABLE_OPERATION_PATH" in result["reason_codes"]
 
 
+def test_preview_detects_allowed_path_collision() -> None:
+    unsafe_task = task()
+    unsafe_task["allowed_paths"] = ["docs/A.md", "docs/a.md"]
+    unsafe_task["forbidden_paths"] = []
+
+    result = preview_scoped_execution(task=unsafe_task, decision=decision(), request=execution_request())
+
+    assert "PORTABILITY_PATH_COLLISION" in result["reason_codes"]
+
+
+def test_preview_matches_allowed_paths_by_collision_key() -> None:
+    portable_task = task()
+    portable_task["allowed_paths"] = ["Docs/File.md"]
+    portable_task["forbidden_paths"] = []
+    request = execution_request()
+    request["operations"] = [{"action": "WRITE", "path": "docs/file.md", "content": ""}]
+
+    result = preview_scoped_execution(task=portable_task, decision=decision(), request=request)
+
+    assert "OPERATION_OUTSIDE_SCOPE" not in result["reason_codes"]
+
+
+def test_preview_detects_allowed_forbidden_ancestor_conflict() -> None:
+    unsafe_task = task()
+    unsafe_task["allowed_paths"] = ["docs/file.md"]
+    unsafe_task["forbidden_paths"] = ["DOCS"]
+
+    result = preview_scoped_execution(task=unsafe_task, decision=decision(), request=execution_request())
+
+    assert "SCOPE_CONFLICT" in result["reason_codes"]
+
+
 def test_preview_blocks_request_outside_authorized_scope():
     result = preview_scoped_execution(
         task=task(),

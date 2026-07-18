@@ -26,6 +26,19 @@ def _is_portable_repository_path(value: Any) -> bool:
     return True
 
 
+def _collision_key(path: str) -> str:
+    return unicodedata.normalize("NFC", path).casefold()
+
+
+def _path_is_same_or_ancestor(parent: str, child: str) -> bool:
+    return parent == child or child.startswith(parent + "/")
+
+
+def _has_collision(paths: list[Any]) -> bool:
+    keys = [_collision_key(path) for path in paths if isinstance(path, str)]
+    return len(keys) != len(paths) or len(keys) != len(set(keys))
+
+
 def preview_scoped_execution(
     *, task: dict[str, Any], decision: dict[str, Any], request: dict[str, Any]
 ) -> dict[str, Any]:
@@ -42,11 +55,28 @@ def preview_scoped_execution(
     if not isinstance(operations, list) or not operations:
         reasons.append("OPERATIONS_REQUIRED")
         operations = []
-    allowed = set(task.get("allowed_paths", []))
-    if any(not isinstance(item, dict) or item.get("path") not in allowed for item in operations):
-        reasons.append("OPERATION_OUTSIDE_SCOPE")
-    if any(not isinstance(item, dict) or not _is_portable_repository_path(item.get("path")) for item in operations):
+    allowed_paths = task.get("allowed_paths", [])
+    forbidden_paths = task.get("forbidden_paths", [])
+    if not isinstance(allowed_paths, list) or not isinstance(forbidden_paths, list):
+        reasons.append("INVALID_SCOPE_PATH_LIST")
+        allowed_paths, forbidden_paths = [], []
+    scope_paths = [*allowed_paths, *forbidden_paths]
+    if any(not _is_portable_repository_path(path) for path in scope_paths):
+        reasons.append("NONPORTABLE_SCOPE_PATH")
+    if _has_collision(allowed_paths) or _has_collision(forbidden_paths) or _has_collision([item.get("path") if isinstance(item, dict) else None for item in operations]):
+        reasons.append("PORTABILITY_PATH_COLLISION")
+    allowed_keys = {_collision_key(path) for path in allowed_paths if isinstance(path, str)}
+    forbidden_keys = [_collision_key(path) for path in forbidden_paths if isinstance(path, str)]
+    if any(_path_is_same_or_ancestor(left, right) or _path_is_same_or_ancestor(right, left) for left in allowed_keys for right in forbidden_keys):
+        reasons.append("SCOPE_CONFLICT")
+    operation_paths = [item.get("path") if isinstance(item, dict) else None for item in operations]
+    if any(not _is_portable_repository_path(path) for path in operation_paths):
         reasons.append("NONPORTABLE_OPERATION_PATH")
+    operation_keys = [_collision_key(path) for path in operation_paths if isinstance(path, str)]
+    if any(key not in allowed_keys for key in operation_keys) or len(operation_keys) != len(operation_paths):
+        reasons.append("OPERATION_OUTSIDE_SCOPE")
+    if any(any(_path_is_same_or_ancestor(forbidden, key) for forbidden in forbidden_keys) for key in operation_keys):
+        reasons.append("OPERATION_IN_FORBIDDEN_SCOPE")
     if not validation["local_execution_authorized"]:
         reasons.append("LOCAL_EXECUTION_NOT_AUTHORIZED")
     if reasons:

@@ -55,6 +55,19 @@ def test_result_decision_cannot_accept_evidence_with_remaining_blockers() -> Non
     assert "EVIDENCE_INCOMPLETE" in result["reason_codes"]
 
 
+def test_result_decision_requires_exact_coverage_of_required_checks() -> None:
+    required_task = task()
+    required_task["required_checks"] = ["markdown"]
+    report = evidence()
+    report["checks"] = [{"name": "unrelated", "status": "PASS"}]
+
+    result = validate_human_result_decision(task=required_task, evidence=report, decision=result_decision())
+
+    assert result["valid"] is False
+    assert result["result_accepted"] is False
+    assert "EVIDENCE_REQUIRED_CHECK_COVERAGE_MISMATCH" in result["reason_codes"]
+
+
 def test_result_decision_blocks_stale_baseline_binding() -> None:
     stale = result_decision()
     stale["baseline_binding"] = "BASELINE-OTHER"
