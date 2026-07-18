@@ -1,5 +1,6 @@
 from hashlib import sha256
 import json
+import os
 
 import pytest
 
@@ -145,6 +146,21 @@ def test_executor_rejects_an_internal_symlinked_operation_path(tmp_path):
     assert result["status"] == "BLOCKED"
     assert result["reason_codes"] == ["SYMLINK_OPERATION_PATH_BLOCKED"]
     assert redirected.read_text(encoding="utf-8") == "original content\n"
+
+
+def test_executor_rejects_a_hardlinked_operation_target_before_writing(tmp_path):
+    external = tmp_path.parent / "external.md"
+    external.write_text("original content\n", encoding="utf-8")
+    target = tmp_path / "docs" / "example.md"
+    target.parent.mkdir()
+    os.link(external, target)
+
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
+
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["HARDLINK_OPERATION_TARGET_BLOCKED"]
+    assert external.read_text(encoding="utf-8") == "original content\n"
+    assert target.read_text(encoding="utf-8") == "original content\n"
 
 
 def test_executor_blocks_directory_targets_before_any_write(tmp_path):

@@ -46,6 +46,11 @@ def _path_traverses_symlink(*, sandbox: Path, operation_path: str) -> bool:
     return False
 
 
+def _is_hardlinked_file(target: Path) -> bool:
+    """Reject an existing file that could also mutate a location outside the sandbox."""
+    return target.is_file() and target.stat().st_nlink > 1
+
+
 def _evidence_target(*, sandbox: Path) -> Path:
     """Resolve the executor-owned evidence path without permitting symlink indirection."""
     canonical_path = sandbox / _EVIDENCE_ARTIFACT_PATH
@@ -109,6 +114,8 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"]))
     if any(_path_traverses_symlink(sandbox=sandbox, operation_path=operation_path) for operation_path in operation_paths):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["SYMLINK_OPERATION_PATH_BLOCKED"]))
+    if any(_is_hardlinked_file(target) for target in targets):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["HARDLINK_OPERATION_TARGET_BLOCKED"]))
     if any(not _target_has_writable_file_path(sandbox=sandbox, target=target) for target in targets):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNWRITABLE_OPERATION_TARGET"]))
     if len(targets) != len(set(targets)):
