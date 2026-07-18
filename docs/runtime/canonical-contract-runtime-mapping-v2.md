@@ -68,6 +68,17 @@ non-string mapping keys, empty documents, and non-mapping top-level documents
 are rejected before semantic evaluation. All present records are validated,
 including recognized records not consumed by the selected command.
 
+Parser limits are immutable runtime v2 parameters:
+
+| Limit | Value | Enforcement point |
+|---|---:|---|
+| maximum UTF-8 document size | `1,048,576` bytes | before YAML parsing |
+| maximum mapping/sequence nesting | `32` | after safe construction, before schema validation |
+| maximum mapping/sequence items | `10,000` per collection | after safe construction, before schema validation |
+
+These limits are fail-closed and apply to every recognized record, including an
+extra record not required by the selected command.
+
 Every v2 schema uses `additionalProperties: false`. A record must declare
 `schema_version: "2.0"`; v1 and unversioned records are rejected rather than
 implicitly upgraded.
