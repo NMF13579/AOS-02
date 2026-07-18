@@ -49,6 +49,20 @@ def test_executor_preflights_all_operations_before_any_write(tmp_path):
     assert result["reason_codes"] == ["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]
 
 
+def test_executor_blocks_duplicate_operation_paths_before_any_write(tmp_path):
+    duplicate_request = request()
+    duplicate_request["operations"].append(
+        {"action": "WRITE", "path": "docs/example.md", "content": "replacement content\n"}
+    )
+
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=duplicate_request)
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert result["status"] == "BLOCKED"
+    assert result["reason_codes"] == ["DUPLICATE_OPERATION_PATH"]
+    assert json.loads((tmp_path / ".aos02/evidence-report.json").read_text(encoding="utf-8"))["status"] == "BLOCKED"
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 

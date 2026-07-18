@@ -60,6 +60,9 @@ def execute_scoped_request(
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["INVALID_OPERATION_PATH"]))
     if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]))
+    operation_paths = [operation["path"] for operation in operations]
+    if len(operation_paths) != len(set(operation_paths)):
+        return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(["DUPLICATE_OPERATION_PATH"]))
 
     performed: list[dict[str, str]] = []
     for operation in operations:
