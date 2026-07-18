@@ -27,6 +27,8 @@ def validate_human_result_decision(
         reasons.append("EVIDENCE_BINDING_MISMATCH")
     if any(decision.get(field) is True for field in FORBIDDEN_GIT_FIELDS):
         reasons.append("FORBIDDEN_GIT_AUTHORITY_CLAIM")
+    if evidence.get("technical_status") != "PASS":
+        reasons.append("EVIDENCE_TECHNICAL_STATUS_NOT_PASS")
     checks = evidence.get("checks", [])
     if not checks or any(not isinstance(check, dict) or check.get("status") != "PASS" for check in checks):
         reasons.append("EVIDENCE_NOT_PASS")

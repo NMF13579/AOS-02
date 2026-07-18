@@ -19,6 +19,8 @@ def validate_human_execution_decision(*, task: dict[str, Any], decision: dict[st
         reasons.append("HUMAN_DECIDER_REQUIRED")
     if decision.get("scope_binding") != task.get("task_id"):
         reasons.append("TASK_BINDING_MISMATCH")
+    if decision.get("baseline_binding") != task.get("baseline_binding"):
+        reasons.append("BASELINE_BINDING_MISMATCH")
     if decision.get("status") != "HUMAN_ACCEPTED":
         reasons.append("DECISION_NOT_HUMAN_ACCEPTED")
     if any(decision.get(field) is True for field in FORBIDDEN_GIT_FIELDS):

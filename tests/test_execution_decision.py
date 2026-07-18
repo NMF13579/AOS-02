@@ -25,6 +25,17 @@ def test_execution_decision_blocks_scope_expansion():
     assert "TASK_BINDING_MISMATCH" in result["reason_codes"]
 
 
+def test_execution_decision_blocks_stale_baseline_binding() -> None:
+    stale = decision()
+    stale["baseline_binding"] = "BASELINE-OTHER"
+
+    result = validate_human_execution_decision(task=task(), decision=stale)
+
+    assert result["valid"] is False
+    assert result["structural_validation"]["status"] == "FAIL"
+    assert "BASELINE_BINDING_MISMATCH" in result["reason_codes"]
+
+
 def test_execution_decision_rejects_implicit_publication_authority():
     with_git = decision()
     with_git["push_authorized"] = True

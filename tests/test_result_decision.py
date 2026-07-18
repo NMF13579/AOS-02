@@ -29,6 +29,19 @@ def test_result_decision_cannot_accept_unrun_evidence():
     assert "EVIDENCE_NOT_PASS" in result["reason_codes"]
 
 
+def test_result_decision_cannot_accept_blocked_evidence_even_when_checks_pass() -> None:
+    report = evidence()
+    report["technical_status"] = "BLOCKED"
+
+    result = validate_human_result_decision(
+        task=task(), evidence=report, decision=result_decision()
+    )
+
+    assert result["valid"] is False
+    assert result["result_accepted"] is False
+    assert "EVIDENCE_TECHNICAL_STATUS_NOT_PASS" in result["reason_codes"]
+
+
 def test_result_decision_rejects_implicit_git_authority():
     decision = result_decision()
     decision["push_authorized"] = True

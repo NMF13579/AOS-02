@@ -72,13 +72,36 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError, TaskBriefError) as exc:
         result = {
             "validation": {"status": "FAIL"}, "control": {"state": "CONTROL_BLOCKED"},
-            "reason_codes": ["BUNDLE_LOAD_ERROR", str(exc)], "next_required_action": "FIX_BUNDLE_STRUCTURE",
+            "reason_codes": ["BUNDLE_LOAD_ERROR"], "diagnostic_detail": type(exc).__name__,
+            "next_required_action": "FIX_BUNDLE_STRUCTURE",
             "approval_granted": False, "execution_authorized": False, "commit_authorized": False,
             "push_authorized": False, "lifecycle_mutated": False,
         }
+        exit_code = 3
+    except Exception as exc:
+        result = {
+            "validation": {"status": "FAIL"}, "control": {"state": "CONTROL_BLOCKED"},
+            "reason_codes": ["INTERNAL_ERROR"], "diagnostic_detail": type(exc).__name__,
+            "next_required_action": "INVESTIGATE_INTERNAL_ERROR",
+            "approval_granted": False, "execution_authorized": False, "commit_authorized": False,
+            "push_authorized": False, "lifecycle_mutated": False,
+        }
+        exit_code = 5
+    else:
+        exit_code = _semantic_exit_code(args.command, result)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    if result.get("validation", {}).get("status") == "FAIL":
+    return exit_code
+
+
+def _semantic_exit_code(command: str, result: dict[str, object]) -> int:
+    validation = result.get("validation")
+    if isinstance(validation, dict) and validation.get("status") in {"FAIL", "UNKNOWN", "NOT_RUN"}:
         return 3
-    if args.command in {"validate-execution", "preview-execution", "execute-scoped"}:
+    structural = result.get("structural_validation")
+    if isinstance(structural, dict) and structural.get("status") == "FAIL":
+        return 3
+    if result.get("valid") is False:
+        return 3
+    if command in {"validate-execution", "preview-execution", "execute-scoped"}:
         return 4
     return 0
