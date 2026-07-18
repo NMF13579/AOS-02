@@ -3,5 +3,9 @@ task_id: EXAMPLE-TASK-001
 idea_binding: EXAMPLE-IDEA-001
 risk_binding: EXAMPLE-RISK-001
 scope_binding: EXAMPLE-SCOPE-001
+allowed_paths:
+  - docs/example.md
+forbidden_paths:
+  - src/
 required_checks:
   - markdown

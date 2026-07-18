@@ -1,0 +1,6 @@
+record_type: HUMAN_EXECUTION_DECISION
+decision_value: ALLOW_LOCAL_EXECUTION
+task_binding: EXAMPLE-TASK-001
+decided_by: HUMAN_OWNER
+allowed_paths:
+  - docs/example.md
