@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from aos02.runtime_records import validate_runtime_record
 
 
@@ -28,3 +31,13 @@ def test_runtime_evidence_rejects_unsafe_artifact_path():
 
     assert result["valid"] is False
     assert "SCHEMA_VALIDATION_FAILED" in result["reason_codes"]
+
+
+def test_negative_runtime_safety_fixtures_are_rejected():
+    fixtures = Path(__file__).parent / "fixtures" / "runtime-records"
+
+    fixture_paths = sorted(fixtures.glob("invalid-*.json"))
+    assert fixture_paths
+    for fixture in fixture_paths:
+        result = validate_runtime_record(json.loads(fixture.read_text(encoding="utf-8")))
+        assert result == {"valid": False, "reason_codes": ["SCHEMA_VALIDATION_FAILED"]}, fixture.name
