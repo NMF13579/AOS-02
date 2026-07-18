@@ -1,6 +1,8 @@
 from hashlib import sha256
 import json
 
+import pytest
+
 from aos02.execution import execute_scoped_request
 
 
@@ -20,6 +22,14 @@ def decision():
 
 def request(path="docs/example.md"):
     return {"record_type": "EXECUTION_REQUEST", "task_binding": "TASK-1", "operations": [{"action": "WRITE", "path": path, "content": "safe content\n"}]}
+
+
+def test_executor_rejects_a_non_directory_sandbox_root(tmp_path):
+    root = tmp_path / "not-a-directory"
+    root.write_text("not a sandbox", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sandbox root must be a directory"):
+        execute_scoped_request(root=root, task=task(), decision=decision(), request=request())
 
 
 def test_executor_writes_only_authorized_file_under_sandbox_root(tmp_path):

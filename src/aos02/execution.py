@@ -61,6 +61,8 @@ def execute_scoped_request(
 ) -> dict[str, Any]:
     """Execute allowed WRITE operations strictly below *root* and return Evidence."""
     sandbox = root.resolve()
+    if sandbox.exists() and not sandbox.is_dir():
+        raise ValueError("sandbox root must be a directory")
     preview = preview_scoped_execution(task=task, decision=decision, request=request)
     if preview["state"] != "PREVIEW_READY":
         return _persist_outcome(sandbox=sandbox, evidence=_blocked_evidence(preview["reason_codes"]))
