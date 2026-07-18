@@ -42,10 +42,12 @@ def execute_scoped_request(
         return _blocked_evidence(preview["reason_codes"])
 
     sandbox = root.resolve()
+    operations = request["operations"]
+    if any(operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str) for operation in operations):
+        return _blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"])
+
     performed: list[dict[str, str]] = []
-    for operation in request["operations"]:
-        if operation.get("action") != "WRITE" or not isinstance(operation.get("content"), str):
-            return _blocked_evidence(["UNSUPPORTED_OR_INCOMPLETE_OPERATION"])
+    for operation in operations:
         target = (sandbox / operation["path"]).resolve()
         if sandbox not in target.parents:
             return _blocked_evidence(["SANDBOX_ESCAPE_BLOCKED"])

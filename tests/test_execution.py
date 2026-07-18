@@ -35,6 +35,17 @@ def test_executor_blocks_path_traversal_without_writing(tmp_path):
     assert "OPERATION_OUTSIDE_SCOPE" in result["reason_codes"]
 
 
+def test_executor_preflights_all_operations_before_any_write(tmp_path):
+    unsafe_request = request()
+    unsafe_request["operations"].append({"action": "DELETE", "path": "docs/example.md"})
+
+    result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=unsafe_request)
+
+    assert not (tmp_path / "docs/example.md").exists()
+    assert result["checks"][0]["status"] == "NOT_RUN"
+    assert result["reason_codes"] == ["UNSUPPORTED_OR_INCOMPLETE_OPERATION"]
+
+
 def test_executor_persists_pass_evidence_only_inside_sandbox_root(tmp_path):
     result = execute_scoped_request(root=tmp_path, task=task(), decision=decision(), request=request())
 
