@@ -51,16 +51,29 @@ def validate_bundle(bundle: dict[str, Any]) -> dict[str, Any]:
         reasons.append("TASK_CONTROL_BINDING_MISMATCH")
     if evidence.get("task_binding") != task.get("task_id"):
         reasons.append("EVIDENCE_TASK_BINDING_MISMATCH")
+    baselines = [risk.get("baseline_binding"), scope.get("baseline_binding"), task.get("baseline_binding"), evidence.get("baseline_binding")]
+    if not all(isinstance(value, str) and value for value in baselines) or len(set(baselines)) != 1:
+        reasons.append("BASELINE_BINDING_MISMATCH")
     if reasons:
         return _result("FAIL", "CONTROL_BLOCKED", "FIX_RECORD_BINDINGS", reasons)
-    if _is_unknown(scope.get("allowed_paths")) or _is_unknown(evidence.get("unknowns", [])):
+    if _is_unknown(scope.get("allowed_paths")) or evidence.get("unknowns"):
         return _result("UNKNOWN", "CONTROL_UNKNOWN_BLOCKED", "RESOLVE_UNKNOWN", ["UNKNOWN_REQUIRED_INFORMATION"])
-    checks = {item.get("name"): item.get("status") for item in evidence.get("checks", []) if isinstance(item, dict)}
+    if evidence.get("technical_status") != "PASS" or evidence.get("blockers") or evidence.get("not_run"):
+        return _result("FAIL", "CONTROL_BLOCKED", "FIX_TECHNICAL_FAILURE", ["EVIDENCE_INCOMPLETE"])
+    check_items = evidence.get("checks", [])
+    if not isinstance(check_items, list):
+        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK"])
+    check_names: list[str] = [item["name"] for item in check_items if isinstance(item, dict) and isinstance(item.get("name"), str)]
+    keys = [name.casefold() for name in check_names]
+    if len(check_names) != len(check_items) or len(keys) != len(set(keys)):
+        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK"])
+    checks = {item["name"]: item.get("status") for item in check_items}
     missing_checks = [name for name in task.get("required_checks", []) if name not in checks]
+    blocked = [name for name in task.get("required_checks", []) if checks.get(name) in {"BLOCKED", "UNKNOWN_BLOCKED", "HUMAN_REVIEW_REQUIRED"}]
     not_run = [name for name in task.get("required_checks", []) if checks.get(name) == "NOT_RUN"]
     failed = [name for name in task.get("required_checks", []) if checks.get(name) == "FAIL"]
-    if missing_checks:
-        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK"], {"missing_checks": missing_checks})
+    if missing_checks or blocked:
+        return _result("FAIL", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["MISSING_REQUIRED_CHECK"], {"missing_checks": missing_checks, "blocked_checks": blocked})
     if not_run:
         return _result("NOT_RUN", "CONTROL_BLOCKED", "RUN_REQUIRED_CHECKS", ["REQUIRED_CHECK_NOT_RUN"], {"not_run_checks": not_run})
     if failed:
